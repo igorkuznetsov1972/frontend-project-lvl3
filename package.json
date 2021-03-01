@@ -26,7 +26,6 @@
     "testURL": "http://localhost/"
   },
   "dependencies": {
-    "bootstrap": "^4.6.0",
     "jquery": "^1.9.1",
     "popper.js": "^1.16.1"
   },
