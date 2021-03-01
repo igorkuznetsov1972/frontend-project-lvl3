@@ -31,7 +31,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'index.html',
       minify: {
-        collapseWhitespace: isProd
+        collapseWhitespace: isProd,
       },
     }),
     new MiniCssExtractPlugin({
