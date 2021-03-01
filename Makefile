@@ -2,7 +2,7 @@
 develop:
 	npx webpack serve
 
-install:
+install-deps:
 	npm ci
 
 build:
@@ -14,6 +14,9 @@ test:
 
 test-coverage:
 	npm test -- --coverage --coverageProvider=v8
+
+watch:
+	npm run watch
 
 lint:
 	npx eslint .
