@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = !isDev;
-const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[hash].${ext}`);
+const fileName = (ext) => (isDev ? `[name].${ext}` : `[name].[hash].${ext}`);
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
@@ -35,7 +35,7 @@ module.exports = {
       },
     }),
     new MiniCssExtractPlugin({
-      filename: filename('css'),
+      fileName: fileName('css'),
     }),
   ],
 };
