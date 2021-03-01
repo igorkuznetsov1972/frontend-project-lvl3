@@ -1,6 +1,6 @@
 
 develop:
-	npx webpack serve
+	NODE_ENV=development npx webpack --mode development
 
 install-deps:
 	npm ci
