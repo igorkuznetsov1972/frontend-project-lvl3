@@ -45,7 +45,7 @@ export default () => {
     //console.log(formData);
     
     const feedUrl = input.value;
-    return axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feedUrl}`)
+    return axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feedUrl)}`)
       .then((response) => {
         const parser = new DOMParser();
         const feed = parser.parseFromString(response, 'application/xml');
