@@ -42,21 +42,21 @@ export default () => {
   const parseFeed = (xml, feedUrl) => {
     const parser = new DOMParser();
     const feed = parser.parseFromString(xml.data.contents, 'application/xml');
-    const feedTitle = feed.querySelector('title').textContent;
-    const feedDescription = feed.querySelector('description').textContent;
-    const feedLastBuildDate = new Date(feed.querySelector('lastBuildDate').textContent);
+    const feedTitle = feed.querySelector('title') ? feed.querySelector('title').textContent : '';
+    const feedDescription = feed.querySelector('description') ? feed.querySelector('description').textContent : '';
+    const feedLastBuildDate = feed.querySelector('lastBuildDate') ? new Date(feed.querySelector('lastBuildDate').textContent) : '';
     const feedId = _.uniqueId();
     watchedState.feeds.set(feedUrl, {
       feedId, feedTitle, feedDescription, feedLastBuildDate,
     });
     feed.querySelectorAll('item').forEach((item) => {
       const postId = _.uniqueId('post_');
-      const postTitle = item.querySelector('title');
-      const postDescription = item.querySelector('description');
-      const postPubDate = item.querySelector('pubDate');
-      const postLink = item.querySelector('link');
+      const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
+      const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
+      const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : ''; 
+      const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
       watchedState.posts.set(postId, {
-        feedId, postTitle, postDescription, postPubDate, postLink,
+        feedId, postTitle, postDescription, postPubDate, postUrl,
       });
     });
   };

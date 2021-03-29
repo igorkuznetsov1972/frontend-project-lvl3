@@ -1,13 +1,11 @@
 import onChange from 'on-change';
-import _ from 'lodash';
 
 export default (state) => {
-  const watchedState = onChange(state, (path, value) => {
+  const watchedState = onChange(state, (path) => {
     switch (path) {
-      case 'feeds':
+      case 'feeds': {
         const feedsContainer = document.querySelector('.feeds');
         feedsContainer.innerHTML = '';
-        const postsContainer = document.querySelector('.posts');
         const feedsHeader = document.createElement('h2');
         feedsHeader.textContent = 'Фиды';
         feedsContainer.appendChild(feedsHeader);
@@ -27,8 +25,11 @@ export default (state) => {
           feedsContainer.appendChild(feedElement);
         });
         break;
+      }
 
-      case 'posts':
+      case 'posts': {
+        const postsContainer = document.querySelector('.posts');
+        postsContainer.innerHTML = '';
         const postsHeader = document.createElement('h2');
         postsHeader.textContent = 'Посты';
         postsContainer.appendChild(postsHeader);
@@ -39,16 +40,18 @@ export default (state) => {
         postsMap.forEach((value, key) => {
           const postElement = document.createElement('li');
           postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
-          const postTitle = document.createElement('h3');
-          postTitle.innerHTML = `<a href=${value.postUrl} class="font-weight-bold" data-id="2" target="_blank" rel="noopener noreferrer">${value.postTitle}</a>`;
-          postElement.appendChild(postTitle);
+          postElement.innerHTML = `<a href=${value.postUrl} class="font-weight-bold" data-id="2" target="_blank" rel="noopener noreferrer">${value.postTitle}</a>`;
           postsList.appendChild(postElement);
           const descriptionButton = document.createElement('button');
-          descriptionButton.innerHTML = 'type="button" class="btn btn-primary btn-sm" data-id="2" data-toggle="modal" data-target="#modal">';
+          descriptionButton.setAttribute('data-id', '2');
+          descriptionButton.setAttribute('data-toggle', 'modal');
+          descriptionButton.setAttribute('data-target', '#modal');
+          descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
           descriptionButton.textContent = 'Просмотр';
-          postsList.appendChild(descriptionButton);
+          postElement.appendChild(descriptionButton);
         });
         break;
+      }
       default: break;
     }
   });
