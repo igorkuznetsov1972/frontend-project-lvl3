@@ -39,7 +39,7 @@ const state = {
 };
 export default () => {
   const watchedState = onChange(state, (path, value) => {
-    console.log(watchedState.posts);
+    console.log(watchedState.feeds);
     const feedsContainer = document.querySelector('.feeds');
     const postsContainer = document.querySelector('.posts');
     const feedsHeader = document.createElement('h2');
@@ -48,7 +48,7 @@ export default () => {
     const feedsList = document.createElement('ul');
     feedsList.classList.add('list-group', 'mb-5');
     feedsContainer.appendChild(feedsList);
-    watchedState.feeds.forEach((key, value, map) => {
+    watchedState.feeds.forEach((value, key) => {
       const feedElement = document.createElement('li');
       feedElement.classList.add('list-group-item');
       const feedTitle = document.createElement('h3');
@@ -64,7 +64,7 @@ export default () => {
     const postsList = document.createElement('ul');
     postsList.classList.add('list-group');
     postsContainer.appendChild(postsList);
-    watchedState.posts.forEach((key, value, map) => {
+    watchedState.posts.forEach((value, key) => {
       const postElement = document.createElement('li');
       postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
       const postTitle = document.createElement('h3');
@@ -85,10 +85,10 @@ export default () => {
     const feedDescription = feed.querySelector('description').textContent;
     const feedLastBuildDate = new Date(feed.querySelector('lastBuildDate').textContent);
     const feedId = _.uniqueId();
-    const feedsObj = {
+    //const feedsObj = 
+    watchedState.feeds.set(feedUrl, {
       feedId, feedTitle, feedDescription, feedLastBuildDate,
-    };
-    watchedState.feeds.set(feedUrl, feedsObj);
+    });
     feed.querySelectorAll('item').forEach((item) => {
       const postId = _.uniqueId('post_');
       const postTitle = item.querySelector('title');
