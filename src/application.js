@@ -53,7 +53,7 @@ export default () => {
       const postId = _.uniqueId('post_');
       const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
       const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
-      const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : ''; 
+      const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
       const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
       watchedState.posts.set(postId, {
         feedId, postTitle, postDescription, postPubDate, postUrl,
