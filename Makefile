@@ -16,7 +16,7 @@ test-coverage:
 	npm test -- --coverage --coverageProvider=v8
 
 watch:
-	npm run watch
+	npx webpack serve
 
 lint:
 	npx eslint .
