@@ -49,16 +49,18 @@ export default () => {
       watchedState.feeds.set(feedUrl, {
         feedId, feedTitle, feedDescription, feedLastBuildDate,
       });
+      const postsOfFeed = new Map();
       feed.querySelectorAll('item').forEach((item) => {
         const postId = _.uniqueId('post_');
         const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
         const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
         const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
         const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
-        watchedState.posts.set(postId, {
+        postsOfFeed.set(postId, {
           feedId, postTitle, postDescription, postPubDate, postUrl,
         });
       });
+      watchedState.posts.set(feedId, postsOfFeed);
     }
   };
   const form = document.querySelector('.rss-form');

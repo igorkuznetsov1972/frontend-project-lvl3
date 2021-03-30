@@ -57,19 +57,22 @@ export default (state) => {
         const postsList = document.createElement('ul');
         postsList.classList.add('list-group');
         postsContainer.append(postsList);
-        const postsMap = new Map(watchedState.posts);
-        postsMap.forEach((value) => {
-          const postElement = document.createElement('li');
-          postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
-          postElement.innerHTML = `<a href=${value.postUrl} class="font-weight-bold" data-id="2" target="_blank" rel="noopener noreferrer">${value.postTitle}</a>`;
-          postsList.append(postElement);
-          const descriptionButton = document.createElement('button');
-          descriptionButton.setAttribute('data-id', '2');
-          descriptionButton.setAttribute('data-toggle', 'modal');
-          descriptionButton.setAttribute('data-target', '#modal');
-          descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
-          descriptionButton.textContent = 'Просмотр';
-          postElement.append(descriptionButton);
+        const postsByFeedMap = new Map(Array.from(watchedState.posts).reverse());
+        postsByFeedMap.forEach((posts) => {
+          const postsMap = new Map(posts);
+          postsMap.forEach((value) => {
+            const postElement = document.createElement('li');
+            postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
+            postElement.innerHTML = `<a href=${value.postUrl} class="font-weight-bold" data-id="2" target="_blank" rel="noopener noreferrer">${value.postTitle}</a>`;
+            postsList.append(postElement);
+            const descriptionButton = document.createElement('button');
+            descriptionButton.setAttribute('data-id', '2');
+            descriptionButton.setAttribute('data-toggle', 'modal');
+            descriptionButton.setAttribute('data-target', '#modal');
+            descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
+            descriptionButton.textContent = 'Просмотр';
+            postElement.append(descriptionButton);
+          });
         });
         break;
       }
