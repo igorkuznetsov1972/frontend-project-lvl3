@@ -24,22 +24,23 @@ export default (state) => {
         feedsContainer.innerHTML = '';
         const feedsHeader = document.createElement('h2');
         feedsHeader.textContent = 'Фиды';
-        feedsContainer.appendChild(feedsHeader);
+
         const feedsList = document.createElement('ul');
         feedsList.classList.add('list-group', 'mb-5');
-        feedsContainer.appendChild(feedsList);
+        feedsContainer.append(feedsList);
         const feedsMap = new Map(watchedState.feeds);
         feedsMap.forEach((value) => {
           const feedElement = document.createElement('li');
           feedElement.classList.add('list-group-item');
           const feedTitle = document.createElement('h3');
           feedTitle.textContent = value.feedTitle;
-          feedElement.appendChild(feedTitle);
+          feedElement.append(feedTitle);
           const feedDescription = document.createElement('p');
           feedDescription.textContent = value.feedDescription;
-          feedElement.appendChild(feedDescription);
-          feedsContainer.appendChild(feedElement);
+          feedElement.append(feedDescription);
+          feedsContainer.prepend(feedElement);
         });
+        feedsContainer.prepend(feedsHeader);
         break;
       }
 
@@ -52,23 +53,23 @@ export default (state) => {
         postsContainer.innerHTML = '';
         const postsHeader = document.createElement('h2');
         postsHeader.textContent = 'Посты';
-        postsContainer.appendChild(postsHeader);
+        postsContainer.append(postsHeader);
         const postsList = document.createElement('ul');
         postsList.classList.add('list-group');
-        postsContainer.appendChild(postsList);
+        postsContainer.append(postsList);
         const postsMap = new Map(watchedState.posts);
         postsMap.forEach((value) => {
           const postElement = document.createElement('li');
           postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
           postElement.innerHTML = `<a href=${value.postUrl} class="font-weight-bold" data-id="2" target="_blank" rel="noopener noreferrer">${value.postTitle}</a>`;
-          postsList.appendChild(postElement);
+          postsList.append(postElement);
           const descriptionButton = document.createElement('button');
           descriptionButton.setAttribute('data-id', '2');
           descriptionButton.setAttribute('data-toggle', 'modal');
           descriptionButton.setAttribute('data-target', '#modal');
           descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
           descriptionButton.textContent = 'Просмотр';
-          postElement.appendChild(descriptionButton);
+          postElement.append(descriptionButton);
         });
         break;
       }
