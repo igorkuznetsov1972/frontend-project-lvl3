@@ -39,6 +39,8 @@ export default () => {
   const parseFeed = (xml, feedUrl) => {
     const parser = new DOMParser();
     const feed = parser.parseFromString(xml.data.contents, 'application/xml');
+    if (!feed.querySelector('rss')) watchedState.errors = 'Ресурс не содержит валидный RSS';
+    console.log(feed);
     const feedTitle = feed.querySelector('title') ? feed.querySelector('title').textContent : '';
     const feedDescription = feed.querySelector('description') ? feed.querySelector('description').textContent : '';
     const feedLastBuildDate = feed.querySelector('lastBuildDate') ? new Date(feed.querySelector('lastBuildDate').textContent) : '';
