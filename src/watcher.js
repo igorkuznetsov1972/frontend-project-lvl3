@@ -29,7 +29,7 @@ export default (state) => {
         feedsList.classList.add('list-group', 'mb-5');
         feedsContainer.appendChild(feedsList);
         const feedsMap = new Map(watchedState.feeds);
-        feedsMap.forEach((value, key) => {
+        feedsMap.forEach((value) => {
           const feedElement = document.createElement('li');
           feedElement.classList.add('list-group-item');
           const feedTitle = document.createElement('h3');
@@ -57,7 +57,7 @@ export default (state) => {
         postsList.classList.add('list-group');
         postsContainer.appendChild(postsList);
         const postsMap = new Map(watchedState.posts);
-        postsMap.forEach((value, key) => {
+        postsMap.forEach((value) => {
           const postElement = document.createElement('li');
           postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
           postElement.innerHTML = `<a href=${value.postUrl} class="font-weight-bold" data-id="2" target="_blank" rel="noopener noreferrer">${value.postTitle}</a>`;
