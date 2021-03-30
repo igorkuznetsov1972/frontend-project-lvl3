@@ -3,7 +3,23 @@ import onChange from 'on-change';
 export default (state) => {
   const watchedState = onChange(state, (path) => {
     switch (path) {
+      case 'form.errors': {
+        const feedBackContainer = document.querySelector('.feedback');
+        feedBackContainer.classList.remove('text-success');
+        feedBackContainer.classList.add('text-danger');
+        feedBackContainer.textContent = watchedState.form.errors;
+        break;
+      }
+      case 'errors': {
+        const feedBackContainer = document.querySelector('.feedback');
+        feedBackContainer.classList.remove('text-success');
+        feedBackContainer.classList.add('text-danger');
+        feedBackContainer.textContent = watchedState.errors;
+        break;
+      }
       case 'feeds': {
+        const form = document.querySelector('.rss-form');
+        form.reset();
         const feedsContainer = document.querySelector('.feeds');
         feedsContainer.innerHTML = '';
         const feedsHeader = document.createElement('h2');
@@ -28,6 +44,10 @@ export default (state) => {
       }
 
       case 'posts': {
+        const feedBackContainer = document.querySelector('.feedback');
+        feedBackContainer.classList.remove('text-danger');
+        feedBackContainer.classList.add('text-success');
+        feedBackContainer.textContent = 'RSS успешно загружен';
         const postsContainer = document.querySelector('.posts');
         postsContainer.innerHTML = '';
         const postsHeader = document.createElement('h2');

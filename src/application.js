@@ -4,26 +4,6 @@ import * as yup from 'yup';
 import axios from 'axios';
 import watcher from './watcher';
 
-const schema = yup.object().shape({
-  url: yup.string().url(),
-});
-
-const validate = (field, watchedState) => {
-  try {
-    schema.validateSync(field);
-    if (!_.some(watchedState.feeds, { url: field })) return '';
-    return 'RSS уже существует';
-  } catch (e) {
-    return e.errors;
-  }
-};
-
-const updateValidationState = (watchedState) => {
-  const errors = validate(watchedState.form.url);
-  watchedState.form.valid = _.isEqual(errors, '');
-  watchedState.form.errors = errors;
-};
-
 const state = {
   form: {
     processState: 'filling',
@@ -32,13 +12,30 @@ const state = {
       url: '',
     },
     valid: true,
-    errors: {},
+    errors: '',
   },
   feeds: new Map(),
   posts: new Map(),
+  errors: '',
 };
+
+const watchedState = watcher(state);
+
+const schema = yup.string().url();
+
+const validate = (url) => {
+  if (!schema.isValidSync(url)) {
+    watchedState.form.errors = 'Ссылка должна быть валидным URL';
+    return false;
+  }
+  if (watchedState.feeds.has(url)) {
+    watchedState.form.errors = 'RSS уже существует';
+    return false;
+  }
+  return true;
+};
+
 export default () => {
-  const watchedState = watcher(state);
   const parseFeed = (xml, feedUrl) => {
     const parser = new DOMParser();
     const feed = parser.parseFromString(xml.data.contents, 'application/xml');
@@ -65,9 +62,13 @@ export default () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const feedUrl = formData.get('url');
-    form.reset();
-    axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(feedUrl)}`)
-      .then((response) => parseFeed(response, feedUrl))
-      .catch((err) => console.log(err));
+    if (validate(feedUrl)) {
+      axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feedUrl}`)
+        .then((response) => parseFeed(response, feedUrl))
+        .catch((err) => {
+          console.log(err);
+          watchedState.errors = 'Ошибка сети';
+        });
+    }
   });
 };
