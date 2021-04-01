@@ -1,6 +1,18 @@
 import onChange from 'on-change';
+import i18next from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import resources from './assets/locales';
 
 export default (state) => {
+  const i18n = i18next.createInstance();
+  i18n
+    .use(LanguageDetector)
+    .init({
+      debug: true,
+      detection: { order: ['navigator'] },
+      resources,
+    });
+
   const watchedState = onChange(state, (path) => {
     switch (path) {
       case 'form.errors': {
@@ -23,7 +35,7 @@ export default (state) => {
         const feedsContainer = document.querySelector('.feeds');
         feedsContainer.innerHTML = '';
         const feedsHeader = document.createElement('h2');
-        feedsHeader.textContent = 'Фиды';
+        feedsHeader.textContent = i18n.t('feeds');
 
         const feedsList = document.createElement('ul');
         feedsList.classList.add('list-group', 'mb-5');
@@ -47,11 +59,11 @@ export default (state) => {
         const feedBackContainer = document.querySelector('.feedback');
         feedBackContainer.classList.remove('text-danger');
         feedBackContainer.classList.add('text-success');
-        feedBackContainer.textContent = 'RSS успешно загружен';
+        feedBackContainer.textContent = i18n.t('RSSsuccess');
         const postsContainer = document.querySelector('.posts');
         postsContainer.innerHTML = '';
         const postsHeader = document.createElement('h2');
-        postsHeader.textContent = 'Посты';
+        postsHeader.textContent = i18n.t('posts');
         postsContainer.append(postsHeader);
         const postsList = document.createElement('ul');
         postsList.classList.add('list-group');
@@ -66,7 +78,7 @@ export default (state) => {
           descriptionButton.setAttribute('data-toggle', 'modal');
           descriptionButton.setAttribute('data-target', '#modal');
           descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
-          descriptionButton.textContent = 'Просмотр';
+          descriptionButton.textContent = i18n.t('view');
           postElement.append(descriptionButton);
         });
         break;
