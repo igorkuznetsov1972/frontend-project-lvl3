@@ -14,8 +14,8 @@ const state = {
     valid: true,
     errors: '',
   },
-  feeds: new Map(),
-  posts: new Map(),
+  feeds: [],
+  posts: [],
   errors: '',
 };
 
@@ -28,7 +28,7 @@ const validate = (url) => {
     watchedState.form.errors = 'Ссылка должна быть валидным URL';
     return false;
   }
-  if (watchedState.feeds.has(url)) {
+  if (watchedState.feeds?.some((feed) => feed.feedUrl === url)) {
     watchedState.form.errors = 'RSS уже существует';
     return false;
   }
@@ -46,21 +46,19 @@ export default () => {
       const feedDescription = feed.querySelector('description') ? feed.querySelector('description').textContent : '';
       const feedLastBuildDate = feed.querySelector('lastBuildDate') ? new Date(feed.querySelector('lastBuildDate').textContent) : '';
       const feedId = _.uniqueId();
-      watchedState.feeds.set(feedUrl, {
-        feedId, feedTitle, feedDescription, feedLastBuildDate,
+      watchedState.feeds.push({
+        feedUrl, feedId, feedTitle, feedDescription, feedLastBuildDate,
       });
-      const postsOfFeed = new Map();
-      feed.querySelectorAll('item').forEach((item) => {
+      Array.from(feed.querySelectorAll('item')).reverse().forEach((item) => {
         const postId = _.uniqueId('post_');
         const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
         const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
         const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
         const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
-        postsOfFeed.set(postId, {
-          feedId, postTitle, postDescription, postPubDate, postUrl,
+        watchedState.posts.unshift({
+          feedId, postId, postTitle, postDescription, postPubDate, postUrl,
         });
       });
-      watchedState.posts.set(feedId, postsOfFeed);
     }
   };
   const form = document.querySelector('.rss-form');
