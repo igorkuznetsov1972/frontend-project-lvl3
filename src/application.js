@@ -53,14 +53,14 @@ export default () => {
         feedState: 'new', feedUrl, feedId, feedTitle, feedDescription, feedLastBuildDate,
       });
       Array.from(feed.querySelectorAll('item')).reverse().forEach((item) => {
-        const postId = _.uniqueId('post_');
+        const postId = _.uniqueId();
         const postGuid = feed.querySelector('guid') ? item.querySelector('guid').textContent : '';
         const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
         const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
         const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
         const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
         watchedState.posts.unshift({
-          feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
+          postRead: false, feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
         });
       });
     }
@@ -69,7 +69,7 @@ export default () => {
     const parser = new DOMParser();
     const feed = parser.parseFromString(xml.data.contents, 'application/xml');
     Array.from(feed.querySelectorAll('item')).reverse().forEach((item) => {
-      const postId = _.uniqueId('post_');
+      const postId = _.uniqueId();
       const postGuid = feed.querySelector('guid') ? item.querySelector('guid').textContent : '';
       const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
       const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';

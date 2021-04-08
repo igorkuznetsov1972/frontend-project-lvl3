@@ -1,3 +1,4 @@
+import * as $ from 'jquery';
 import onChange from 'on-change';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -71,10 +72,11 @@ export default (state) => {
         watchedState.posts.forEach((post) => {
           const postElement = document.createElement('li');
           postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
-          postElement.innerHTML = `<a href=${post.postUrl} class="font-weight-bold" data-id="2" target="_blank" rel="noopener noreferrer">${post.postTitle}</a>`;
+          const font = post.postRead ? 'font-weight-normal' : 'font-weight-bold';
+          postElement.innerHTML = `<a href=${post.postUrl} class=${font} data-id="2" target="_blank" rel="noopener noreferrer">${post.postTitle}</a>`;
           postsList.append(postElement);
           const descriptionButton = document.createElement('button');
-          descriptionButton.setAttribute('data-id', '2');
+          descriptionButton.setAttribute('data-id', `${post.postId}`);
           descriptionButton.setAttribute('data-toggle', 'modal');
           descriptionButton.setAttribute('data-target', '#modal');
           descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
@@ -86,5 +88,20 @@ export default (state) => {
       default: break;
     }
   });
+
+  $('#modal').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget);
+    const postText = $(button.prev('a'));
+    postText.removeClass('font-weight-bold');
+    postText.addClass('font-weight-normal')
+    const postId = $(button).data('id').toString();
+    const post = watchedState.posts.find((element) => element.postId === postId);
+    post.postRead = true;
+    const modal = $(this);
+    modal.find('.modal-title').text(post.postTitle);
+    modal.find('.modal-body').text(post.postDescription);
+    modal.find('a.full-article').attr("href", post.postUrl);
+  });
+
   return watchedState;
 };
