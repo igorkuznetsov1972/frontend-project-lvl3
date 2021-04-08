@@ -76,27 +76,30 @@ export default () => {
       const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
       const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
       if (postGuid !== '') {
-        if (!watchedState.posts.filter((post) => post.feedId === feedId).some((post) => post.postGuid === postGuid)) {
+        if (!watchedState.posts
+          .filter((post) => post.feedId === feedId)
+          .some((post) => post.postGuid === postGuid)) {
           watchedState.posts.unshift({
             feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
           });
         }
-      } else {
-        if (!watchedState.posts.filter((post) => post.feedId === feedId).some((post) => post.postUrl === postUrl)) {
+      } else if (!watchedState.posts
+          .filter((post) => post.feedId === feedId)
+          .some((post) => post.postUrl === postUrl)) {
           watchedState.posts.unshift({
             feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
           });
-        }
+        
       }
-    })
-  };
+    });
+  }
   function updateFeed(feed) {
- //   console.log('updating feed');
+    //   console.log('updating feed');
     axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feed.feedUrl}`)
       .then((response) => checkForNewPosts(response, feed.feedId))
       .catch((err) => console.log(err));
-    setTimeout(updateFeed, 5000, feed)
-  };
+    setTimeout(updateFeed, 5000, feed);
+  }
   function updateAllFeeds() {
   //  console.log('updating all feeds');
     watchedState.feeds.forEach((feed) => {
