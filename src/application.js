@@ -84,12 +84,11 @@ export default () => {
           });
         }
       } else if (!watchedState.posts
-          .filter((post) => post.feedId === feedId)
-          .some((post) => post.postUrl === postUrl)) {
-          watchedState.posts.unshift({
-            feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
-          });
-        
+        .filter((post) => post.feedId === feedId)
+        .some((post) => post.postUrl === postUrl)) {
+        watchedState.posts.unshift({
+          feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
+        });
       }
     });
   }
@@ -101,7 +100,7 @@ export default () => {
     setTimeout(updateFeed, 5000, feed);
   }
   function updateAllFeeds() {
-  //  console.log('updating all feeds');
+    //  console.log('updating all feeds');
     watchedState.feeds.forEach((feed) => {
       if (feed.feedState === 'new') {
         feed.feedState = 'updating';
