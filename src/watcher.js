@@ -89,7 +89,7 @@ export default (state) => {
     }
   });
 
-  $('#modal').on('show.bs.modal', function findModal (event) {
+  $('#modal').on('show.bs.modal', function findModal(event) {
     const button = $(event.relatedTarget);
     const postText = $(button.prev('a'));
     postText.removeClass('font-weight-bold');
