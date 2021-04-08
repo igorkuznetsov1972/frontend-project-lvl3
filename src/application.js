@@ -59,7 +59,8 @@ export default () => {
         const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
         const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
         const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
-        watchedState.posts.unshift({
+        watchedState.posts
+        .unshift({
           postRead: false, feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
         });
       });

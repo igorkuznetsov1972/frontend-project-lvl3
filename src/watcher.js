@@ -89,18 +89,18 @@ export default (state) => {
     }
   });
 
-  $('#modal').on('show.bs.modal', function (event) {
+  $('#modal').on('show.bs.modal', (event) => {
     const button = $(event.relatedTarget);
     const postText = $(button.prev('a'));
     postText.removeClass('font-weight-bold');
-    postText.addClass('font-weight-normal')
+    postText.addClass('font-weight-normal');
     const postId = $(button).data('id').toString();
     const post = watchedState.posts.find((element) => element.postId === postId);
     post.postRead = true;
     const modal = $(this);
     modal.find('.modal-title').text(post.postTitle);
     modal.find('.modal-body').text(post.postDescription);
-    modal.find('a.full-article').attr("href", post.postUrl);
+    modal.find('a.full-article').attr('href', post.postUrl);
   });
 
   return watchedState;
