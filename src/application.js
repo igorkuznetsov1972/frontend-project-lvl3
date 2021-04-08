@@ -50,20 +50,63 @@ export default () => {
       const feedLastBuildDate = feed.querySelector('lastBuildDate') ? new Date(feed.querySelector('lastBuildDate').textContent) : '';
       const feedId = _.uniqueId();
       watchedState.feeds.push({
-        feedUrl, feedId, feedTitle, feedDescription, feedLastBuildDate,
+        feedState: 'new', feedUrl, feedId, feedTitle, feedDescription, feedLastBuildDate,
       });
       Array.from(feed.querySelectorAll('item')).reverse().forEach((item) => {
         const postId = _.uniqueId('post_');
+        const postGuid = feed.querySelector('guid') ? item.querySelector('guid').textContent : '';
         const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
         const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
         const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
         const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
         watchedState.posts.unshift({
-          feedId, postId, postTitle, postDescription, postPubDate, postUrl,
+          feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
         });
       });
     }
   };
+  function checkForNewPosts(xml, feedId) {
+    const parser = new DOMParser();
+    const feed = parser.parseFromString(xml.data.contents, 'application/xml');
+    Array.from(feed.querySelectorAll('item')).reverse().forEach((item) => {
+      const postId = _.uniqueId('post_');
+      const postGuid = feed.querySelector('guid') ? item.querySelector('guid').textContent : '';
+      const postTitle = item.querySelector('title') ? item.querySelector('title').textContent : '';
+      const postDescription = item.querySelector('description') ? item.querySelector('description').textContent : '';
+      const postPubDate = item.querySelector('pubDate') ? new Date(item.querySelector('pubDate').textContent) : '';
+      const postUrl = item.querySelector('link') ? item.querySelector('link').textContent : '';
+      if (postGuid !== '') {
+        if (!watchedState.posts.filter((post) => post.feedId === feedId).some((post) => post.postGuid === postGuid)) {
+          watchedState.posts.unshift({
+            feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
+          });
+        }
+      } else {
+        if (!watchedState.posts.filter((post) => post.feedId === feedId).some((post) => post.postUrl === postUrl)) {
+          watchedState.posts.unshift({
+            feedId, postGuid, postId, postTitle, postDescription, postPubDate, postUrl,
+          });
+        }
+      }
+    })
+  };
+  function updateFeed(feed) {
+    console.log('updating feed');
+    axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feed.feedUrl}`)
+      .then((response) => checkForNewPosts(response, feed.feedId))
+      .catch((err) => console.log(err));
+    setTimeout(updateFeed, 5000, feed)
+  };
+  function updateAllFeeds() {
+    console.log('updating all feeds');
+    watchedState.feeds.forEach((feed) => {
+      if (feed.feedState === 'new') {
+        feed.feedState = 'updating';
+        updateFeed(feed);
+      }
+    });
+    setTimeout(updateAllFeeds, 5000);
+  }
   const form = document.querySelector('.rss-form');
   i18n
     .use(LanguageDetector)
@@ -85,4 +128,5 @@ export default () => {
           });
       }
     }));
+  updateAllFeeds();
 };
