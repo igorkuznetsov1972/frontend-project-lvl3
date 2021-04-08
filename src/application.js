@@ -91,14 +91,14 @@ export default () => {
     })
   };
   function updateFeed(feed) {
-    console.log('updating feed');
+ //   console.log('updating feed');
     axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feed.feedUrl}`)
       .then((response) => checkForNewPosts(response, feed.feedId))
       .catch((err) => console.log(err));
     setTimeout(updateFeed, 5000, feed)
   };
   function updateAllFeeds() {
-    console.log('updating all feeds');
+  //  console.log('updating all feeds');
     watchedState.feeds.forEach((feed) => {
       if (feed.feedState === 'new') {
         feed.feedState = 'updating';
