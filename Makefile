@@ -1,6 +1,6 @@
 
 develop:
-	NODE_ENV=development npx webpack --mode development
+	NODE_ENV=development npx webpack serve
 
 install-deps:
 	npm ci
@@ -14,9 +14,6 @@ test:
 
 test-coverage:
 	npm test -- --coverage --coverageProvider=v8
-
-watch:
-	npx webpack serve
 
 lint:
 	npx eslint .
