@@ -20,14 +20,14 @@ export default (state) => {
         const feedBackContainer = document.querySelector('.feedback');
         feedBackContainer.classList.remove('text-success');
         feedBackContainer.classList.add('text-danger');
-        feedBackContainer.textContent = watchedState.form.errors;
+        feedBackContainer.textContent = i18n.t(watchedState.form.errors);
         break;
       }
       case 'errors': {
         const feedBackContainer = document.querySelector('.feedback');
         feedBackContainer.classList.remove('text-success');
         feedBackContainer.classList.add('text-danger');
-        feedBackContainer.textContent = watchedState.errors;
+        feedBackContainer.textContent = i18n.t(watchedState.errors);
         break;
       }
       case 'feeds': {
