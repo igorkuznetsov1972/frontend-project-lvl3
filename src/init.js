@@ -17,7 +17,6 @@ export default () => {
         url: '',
       },
       valid: true,
-      errors: '',
     },
     feedUrls: [],
     feeds: [],
@@ -64,6 +63,7 @@ export default () => {
   function checkForNewPosts(xml, feedId) {
     const { parsedItems } = parseFeed(xml);
     parsedItems.reverse().forEach((item) => {
+      item.feedId = feedId;
       if (!watchedState.posts
         .filter((el) => el.feedId === feedId)
         .some((el) => el.postUrl === item.postUrl)) {
@@ -75,8 +75,8 @@ export default () => {
   function updateFeed(feed) {
     axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feed.feedUrl}`)
       .then((response) => checkForNewPosts(response, feed.feedId))
+      .then(setTimeout(updateFeed, 5000, feed))
       .catch((err) => console.log(err));
-    setTimeout(updateFeed, 5000, feed);
   }
 
   function updateAllFeeds() {
@@ -106,7 +106,7 @@ export default () => {
           watchedState.posts.unshift(...parsedItems);
         })
         .catch((err) => watchedState.errors = err.message))
-      .catch((err) => watchedState.form.errors = err.errors.toString());
+      .catch((err) => watchedState.errors = err.errors.toString());
   });
   updateAllFeeds();
 };

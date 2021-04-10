@@ -16,13 +16,6 @@ export default (state) => {
 
   const watchedState = onChange(state, (path) => {
     switch (path) {
-      case 'form.errors': {
-        const feedBackContainer = document.querySelector('.feedback');
-        feedBackContainer.classList.remove('text-success');
-        feedBackContainer.classList.add('text-danger');
-        feedBackContainer.textContent = i18n.t(watchedState.form.errors);
-        break;
-      }
       case 'errors': {
         const feedBackContainer = document.querySelector('.feedback');
         feedBackContainer.classList.remove('text-success');
