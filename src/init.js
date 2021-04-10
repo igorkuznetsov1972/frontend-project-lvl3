@@ -42,7 +42,7 @@ export default () => {
     const parsedFeed = { feedState: 'new' };
     const parsedItems = [];
     if (!feed.querySelector('rss')) {
-      watchedState.errors = 'errRSS';
+      throw new Error('errRSS');
     } else {
       parsedFeed.feedTitle = feed.querySelector('title').textContent;
       parsedFeed.feedDescription = feed.querySelector('description').textContent;
@@ -105,7 +105,7 @@ export default () => {
           watchedState.feeds.push(parsedFeed);
           watchedState.posts.unshift(...parsedItems);
         })
-        .catch(() => watchedState.errors = 'netErr'))
+        .catch((err) => watchedState.errors = err.message))
       .catch((err) => watchedState.form.errors = err.errors.toString());
   });
   updateAllFeeds();

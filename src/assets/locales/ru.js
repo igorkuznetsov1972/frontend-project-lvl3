@@ -1,6 +1,6 @@
 export default {
   translation: {
-    netErr: 'Ошибка сети',
+    'Network Error': 'Ошибка сети',
     errRSS: 'Ресурс не содержит валидный RSS',
     errURL: 'Ссылка должна быть валидным URL',
     errRSSadded: 'RSS уже существует',
