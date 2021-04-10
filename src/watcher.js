@@ -33,6 +33,10 @@ export default (state) => {
       case 'feeds': {
         const form = document.querySelector('.rss-form');
         form.reset();
+        const feedBackContainer = document.querySelector('.feedback');
+        feedBackContainer.classList.remove('text-danger');
+        feedBackContainer.classList.add('text-success');
+        feedBackContainer.textContent = i18n.t('RSSsuccess');
         const feedsContainer = document.querySelector('.feeds');
         feedsContainer.innerHTML = '';
         const feedsHeader = document.createElement('h2');
@@ -57,10 +61,6 @@ export default (state) => {
       }
 
       case 'posts': {
-        const feedBackContainer = document.querySelector('.feedback');
-        feedBackContainer.classList.remove('text-danger');
-        feedBackContainer.classList.add('text-success');
-        feedBackContainer.textContent = i18n.t('RSSsuccess');
         const postsContainer = document.querySelector('.posts');
         postsContainer.innerHTML = '';
         const postsHeader = document.createElement('h2');
