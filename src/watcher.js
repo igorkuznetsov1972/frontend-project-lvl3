@@ -34,10 +34,11 @@ export default (state) => {
         feedsContainer.innerHTML = '';
         const feedsHeader = document.createElement('h2');
         feedsHeader.textContent = i18n.t('feeds');
-
+        feedsContainer.prepend(feedsHeader);
+        const feedsDocumentFragment = new DocumentFragment();
         const feedsList = document.createElement('ul');
         feedsList.classList.add('list-group', 'mb-5');
-        feedsContainer.append(feedsList);
+        feedsDocumentFragment.append(feedsList);
         watchedState.feeds.forEach((value) => {
           const feedElement = document.createElement('li');
           feedElement.classList.add('list-group-item');
@@ -47,9 +48,9 @@ export default (state) => {
           const feedDescription = document.createElement('p');
           feedDescription.textContent = value.feedDescription;
           feedElement.append(feedDescription);
-          feedsContainer.prepend(feedElement);
+          feedsList.prepend(feedElement);
         });
-        feedsContainer.prepend(feedsHeader);
+        feedsContainer.append(feedsDocumentFragment);
         break;
       }
 
@@ -59,9 +60,10 @@ export default (state) => {
         const postsHeader = document.createElement('h2');
         postsHeader.textContent = i18n.t('posts');
         postsContainer.append(postsHeader);
+        const postsDocumentFragment = new DocumentFragment();
         const postsList = document.createElement('ul');
         postsList.classList.add('list-group');
-        postsContainer.append(postsList);
+        postsDocumentFragment.append(postsList);
         watchedState.posts.forEach((post) => {
           const postElement = document.createElement('li');
           postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
@@ -76,6 +78,7 @@ export default (state) => {
           descriptionButton.textContent = i18n.t('view');
           postElement.append(descriptionButton);
         });
+        postsContainer.append(postsDocumentFragment);
         break;
       }
       default: break;
