@@ -1,8 +1,10 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable no-param-reassign */
+import * as $ from 'jquery';
 import _ from 'lodash';
 import * as yup from 'yup';
 import axios from 'axios';
+import setYupLocale from './assets/locales/yupLocale';
 // import i18next from 'i18next';
 // import LanguageDetector from 'i18next-browser-languagedetector';
 import watcher from './watcher';
@@ -26,21 +28,14 @@ export default () => {
 
   const watchedState = watcher(state);
 
-  yup.setLocale({
-    mixed: {
-      notOneOf: 'errRSSadded',
-    },
-    string: {
-      url: 'errURL',
-    },
-  });
+  setYupLocale();
 
   const parseFeed = (xml) => {
     const parser = new DOMParser();
     const feed = parser.parseFromString(xml.data.contents, 'application/xml');
     const parsedFeed = { feedState: 'new' };
     const parsedItems = [];
-    if (!feed.querySelector('rss')) {
+    if (!feed.querySelector('rss') || feed.querySelector('parsererror ')) {
       throw new Error('errRSS');
     } else {
       parsedFeed.feedTitle = feed.querySelector('title').textContent;
@@ -60,7 +55,14 @@ export default () => {
     return { parsedFeed, parsedItems };
   };
 
-  function checkForNewPosts(xml, feedId) {
+  const composeRssUrl = (feedUrl) => {
+    const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
+    url.searchParams.set('disableCache', 'true');
+    url.searchParams.set('url', `${feedUrl}`);
+    return url;
+  };
+
+  const checkForNewPosts = (xml, feedId) => {
     const { parsedItems } = parseFeed(xml);
     parsedItems.reverse().forEach((item) => {
       item.feedId = feedId;
@@ -70,16 +72,16 @@ export default () => {
         watchedState.posts.unshift(item);
       }
     });
-  }
+  };
 
-  function updateFeed(feed) {
-    axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feed.feedUrl}`)
+  const updateFeed = (feed) => {
+    axios.get(composeRssUrl(feed.feedUrl))
       .then((response) => checkForNewPosts(response, feed.feedId))
       .then(setTimeout(updateFeed, 5000, feed))
       .catch((err) => console.log(err));
-  }
+  };
 
-  function updateAllFeeds() {
+  const updateAllFeeds = () => {
     watchedState.feeds.forEach((feed) => {
       if (feed.feedState === 'new') {
         feed.feedState = 'updating';
@@ -87,7 +89,7 @@ export default () => {
       }
     });
     setTimeout(updateAllFeeds, 5000);
-  }
+  };
 
   const form = document.querySelector('.rss-form');
 
@@ -97,7 +99,7 @@ export default () => {
     const feedUrl = formData.get('url');
     const schema = yup.string().url().notOneOf(watchedState.feedUrls);
     schema.validate(feedUrl, { abortEarly: true })
-      .then((value) => axios(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${value}`)
+      .then((url) => axios.get(composeRssUrl(url))
         .then((response) => parseFeed(response))
         .then(({ parsedFeed, parsedItems }) => {
           parsedFeed.feedUrl = feedUrl;
@@ -108,5 +110,20 @@ export default () => {
         .catch((err) => watchedState.errors = err.message))
       .catch((err) => watchedState.errors = err.errors.toString());
   });
+
+  $('#modal').on('show.bs.modal', function findModal(event) {
+    const button = $(event.relatedTarget);
+    const postText = $(button.prev('a'));
+    postText.removeClass('font-weight-bold');
+    postText.addClass('font-weight-normal');
+    const postId = $(button).data('id').toString();
+    const post = watchedState.posts.find((element) => element.postId === postId);
+    post.postRead = true;
+    const modal = $(this);
+    modal.find('.modal-title').text(post.postTitle);
+    modal.find('.modal-body').text(post.postDescription);
+    modal.find('a.full-article').attr('href', post.postUrl);
+  });
+
   updateAllFeeds();
 };
