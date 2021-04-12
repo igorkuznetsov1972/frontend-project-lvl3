@@ -77,6 +77,18 @@ export default (state) => {
       postsContainer.append(postsDocumentFragment);
     };
 
+    const blockInput = () => {
+      const input = document.querySelector('.form-control');
+      const inputButton = document.querySelector('button[type=submit]');
+      if (watchedState.form.valid) {
+        input.setAttribute('disabled', true);
+        inputButton.setAttribute('disabled', true);
+      } else {
+        input.removeAttribute('disabled');
+        inputButton.removeAttribute('disabled');
+      }
+    };
+
     switch (path) {
       case 'errors': {
         renderError();
@@ -84,12 +96,7 @@ export default (state) => {
       }
 
       case 'form.valid': {
-        const input = document.querySelector('.form-control');
-        if (watchedState.form.valid) {
-          input.setAttribute('disabled', true);
-        } else {
-          input.removeAttribute('disabled');
-        }
+        blockInput();
         break;
       }
 
