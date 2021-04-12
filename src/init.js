@@ -1,13 +1,13 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable no-param-reassign */
 import * as $ from 'jquery';
-import _ from 'lodash';
 import * as yup from 'yup';
 import axios from 'axios';
 import setYupLocale from './assets/locales/yupLocale';
 // import i18next from 'i18next';
 // import LanguageDetector from 'i18next-browser-languagedetector';
 import watcher from './watcher';
+import parseFeed from './parser';
 // import resources from './assets/locales';
 
 export default () => {
@@ -18,7 +18,7 @@ export default () => {
       fields: {
         url: '',
       },
-      valid: true,
+      valid: false,
     },
     feedUrls: [],
     feeds: [],
@@ -26,34 +26,10 @@ export default () => {
     errors: '',
   };
 
+  const timeout = 5000;
   const watchedState = watcher(state);
 
   setYupLocale();
-
-  const parseFeed = (xml) => {
-    const parser = new DOMParser();
-    const feed = parser.parseFromString(xml.data.contents, 'application/xml');
-    const parsedFeed = { feedState: 'new' };
-    const parsedItems = [];
-    if (!feed.querySelector('rss') || feed.querySelector('parsererror ')) {
-      throw new Error('errRSS');
-    } else {
-      parsedFeed.feedTitle = feed.querySelector('title').textContent;
-      parsedFeed.feedDescription = feed.querySelector('description').textContent;
-      parsedFeed.feedId = _.uniqueId();
-      Array.from(feed.querySelectorAll('item')).reverse().forEach((item) => {
-        const post = { postRead: false, feedId: parsedFeed.feedId };
-        post.postId = _.uniqueId();
-        post.postGuid = feed.querySelector('guid').textContent;
-        post.postTitle = item.querySelector('title').textContent;
-        post.postDescription = item.querySelector('description').textContent;
-        post.postPubDate = item.querySelector('pubDate').textContent;
-        post.postUrl = item.querySelector('link').textContent;
-        parsedItems.unshift(post);
-      });
-    }
-    return { parsedFeed, parsedItems };
-  };
 
   const composeRssUrl = (feedUrl) => {
     const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
@@ -77,7 +53,7 @@ export default () => {
   const updateFeed = (feed) => {
     axios.get(composeRssUrl(feed.feedUrl))
       .then((response) => checkForNewPosts(response, feed.feedId))
-      .then(setTimeout(updateFeed, 5000, feed))
+      .then(setTimeout(updateFeed, timeout, feed))
       .catch((err) => console.log(err));
   };
 
@@ -88,7 +64,7 @@ export default () => {
         updateFeed(feed);
       }
     });
-    setTimeout(updateAllFeeds, 5000);
+    setTimeout(updateAllFeeds, timeout);
   };
 
   const form = document.querySelector('.rss-form');
@@ -97,6 +73,7 @@ export default () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const feedUrl = formData.get('url');
+    watchedState.form.valid = true;
     const schema = yup.string().url().notOneOf(watchedState.feedUrls);
     schema.validate(feedUrl, { abortEarly: true })
       .then((url) => axios.get(composeRssUrl(url))
@@ -106,9 +83,17 @@ export default () => {
           watchedState.feedUrls.push(feedUrl);
           watchedState.feeds.push(parsedFeed);
           watchedState.posts.unshift(...parsedItems);
+          watchedState.form.valid = false;
         })
-        .catch((err) => watchedState.errors = err.message))
-      .catch((err) => watchedState.errors = err.errors.toString());
+        .then(form.reset())
+        .catch((err) => {
+          watchedState.errors = err.message;
+          watchedState.form.valid = false;
+        }))
+      .catch((err) => {
+        watchedState.errors = err.errors.toString();
+        watchedState.form.valid = false;
+      });
   });
 
   $('#modal').on('show.bs.modal', function findModal(event) {
