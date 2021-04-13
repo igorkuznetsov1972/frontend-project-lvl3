@@ -64,7 +64,6 @@ export default (state) => {
         postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
         const font = post.postRead ? 'font-weight-normal' : 'font-weight-bold';
         postElement.innerHTML = `<a href=${post.postUrl} class=${font} data-id="2" target="_blank" rel="noopener noreferrer">${post.postTitle}</a>`;
-        postsList.append(postElement);
         const descriptionButton = document.createElement('button');
         descriptionButton.setAttribute('data-id', `${post.postId}`);
         descriptionButton.setAttribute('data-toggle', 'modal');
@@ -72,6 +71,7 @@ export default (state) => {
         descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
         descriptionButton.textContent = i18n.t('view');
         postElement.append(descriptionButton);
+        postsList.append(postElement);
       });
       postsDocumentFragment.append(postsList);
       postsContainer.append(postsDocumentFragment);
@@ -110,11 +110,8 @@ export default (state) => {
         break;
       }
 
-      case 'feedUrls':
-        break;
-
       default:
-        throw new Error(`${path} - unknown case`);
+        break;
     }
   });
 

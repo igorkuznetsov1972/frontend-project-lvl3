@@ -1,6 +1,8 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable no-param-reassign */
 import * as $ from 'jquery';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
 import setYupLocale from './assets/locales/yupLocale';
@@ -50,12 +52,10 @@ export default () => {
     });
   };
 
-  const updateFeed = (feed) => {
-    axios.get(composeRssUrl(feed.feedUrl))
-      .then((response) => checkForNewPosts(response, feed.feedId))
-      .then(setTimeout(updateFeed, timeout, feed))
-      .catch((err) => console.log(err));
-  };
+  const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
+    .then((response) => checkForNewPosts(response, feed.feedId))
+    .then(setTimeout(updateFeed, timeout, feed))
+    .catch((err) => console.log(err));
 
   const updateAllFeeds = () => {
     watchedState.feeds.forEach((feed) => {
@@ -92,7 +92,7 @@ export default () => {
         }))
       .catch((err) => {
         watchedState.errors = err.errors.toString();
-        watchedState.form.valid = false;
+        // watchedState.form.valid = false;
       });
   });
 
