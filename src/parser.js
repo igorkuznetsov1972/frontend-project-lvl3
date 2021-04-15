@@ -11,7 +11,7 @@ export default (xml) => {
     parsedFeed.feedTitle = feed.querySelector('title').textContent;
     parsedFeed.feedDescription = feed.querySelector('description').textContent;
     parsedFeed.feedId = _.uniqueId();
-    Array.from(feed.querySelectorAll('item')).reverse().forEach((item) => {
+    Array.from(feed.querySelectorAll('item')).forEach((item) => {
       const post = { postRead: false, feedId: parsedFeed.feedId };
       post.postId = _.uniqueId();
       post.postGuid = feed.querySelector('guid').textContent;
@@ -19,7 +19,7 @@ export default (xml) => {
       post.postDescription = item.querySelector('description').textContent;
       post.postPubDate = item.querySelector('pubDate').textContent;
       post.postUrl = item.querySelector('link').textContent;
-      parsedItems.unshift(post);
+      parsedItems.push(post);
     });
   }
   return { parsedFeed, parsedItems };

@@ -1,7 +1,6 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable no-param-reassign */
 import * as $ from 'jquery';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap';
 import * as yup from 'yup';
 import axios from 'axios';
@@ -15,14 +14,16 @@ import parseFeed from './parser';
 export default () => {
   const state = {
     form: {
-      processState: 'filling',
+      processState: 'idle',
       processError: null,
-      fields: {
-        url: '',
-      },
-      valid: false,
+      valid: true,
+    },
+    modal: {
+      processState: 'hidden',
+      postId: '',
     },
     feedUrls: [],
+    readPosts: [],
     feeds: [],
     posts: [],
     errors: '',
@@ -57,58 +58,39 @@ export default () => {
     .then(setTimeout(updateFeed, timeout, feed))
     .catch((err) => console.log(err));
 
-  const updateAllFeeds = () => {
-    watchedState.feeds.forEach((feed) => {
-      if (feed.feedState === 'new') {
-        feed.feedState = 'updating';
-        updateFeed(feed);
-      }
-    });
-    setTimeout(updateAllFeeds, timeout);
-  };
-
   const form = document.querySelector('.rss-form');
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const feedUrl = formData.get('url');
-    watchedState.form.valid = true;
+    watchedState.form.processState = 'working';
     const schema = yup.string().url().notOneOf(watchedState.feedUrls);
     schema.validate(feedUrl, { abortEarly: true })
       .then((url) => axios.get(composeRssUrl(url))
         .then((response) => parseFeed(response))
         .then(({ parsedFeed, parsedItems }) => {
           parsedFeed.feedUrl = feedUrl;
-          watchedState.feedUrls.push(feedUrl);
+          updateFeed(parsedFeed);
           watchedState.feeds.push(parsedFeed);
           watchedState.posts.unshift(...parsedItems);
-          watchedState.form.valid = false;
+          watchedState.form.processState = 'success';
         })
-        .then(form.reset())
         .catch((err) => {
-          watchedState.errors = err.message;
+          watchedState.form.processError = err.message;
           watchedState.form.valid = false;
+          watchedState.form.processState = 'idle';
         }))
       .catch((err) => {
         watchedState.errors = err.errors.toString();
-        // watchedState.form.valid = false;
+        watchedState.form.processState = 'idle';
       });
   });
 
-  $('#modal').on('show.bs.modal', function findModal(event) {
+  $('#modal').on('show.bs.modal', (event) => {
     const button = $(event.relatedTarget);
-    const postText = $(button.prev('a'));
-    postText.removeClass('font-weight-bold');
-    postText.addClass('font-weight-normal');
     const postId = $(button).data('id').toString();
-    const post = watchedState.posts.find((element) => element.postId === postId);
-    post.postRead = true;
-    const modal = $(this);
-    modal.find('.modal-title').text(post.postTitle);
-    modal.find('.modal-body').text(post.postDescription);
-    modal.find('a.full-article').attr('href', post.postUrl);
+    watchedState.modal.postId = postId;
+    watchedState.readPosts.push(postId);
   });
-
-  updateAllFeeds();
 };

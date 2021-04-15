@@ -15,18 +15,14 @@ export default (state) => {
     });
 
   const watchedState = onChange(state, (path) => {
-    const renderError = () => {
+    const renderError = (errorPath) => {
       const feedBackContainer = document.querySelector('.feedback');
       feedBackContainer.classList.remove('text-success');
       feedBackContainer.classList.add('text-danger');
-      feedBackContainer.textContent = i18n.t(watchedState.errors);
+      feedBackContainer.textContent = i18n.t(errorPath);
     };
 
     const renderFeeds = () => {
-      const feedBackContainer = document.querySelector('.feedback');
-      feedBackContainer.classList.remove('text-danger');
-      feedBackContainer.classList.add('text-success');
-      feedBackContainer.textContent = i18n.t('RSSsuccess');
       const feedsContainer = document.querySelector('.feeds');
       feedsContainer.innerHTML = '';
       const feedsHeader = document.createElement('h2');
@@ -62,7 +58,7 @@ export default (state) => {
       watchedState.posts.forEach((post) => {
         const postElement = document.createElement('li');
         postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
-        const font = post.postRead ? 'font-weight-normal' : 'font-weight-bold';
+        const font = watchedState.readPosts.includes(post.postId) ? 'font-weight-normal' : 'font-weight-bold';
         postElement.innerHTML = `<a href=${post.postUrl} class=${font} data-id="2" target="_blank" rel="noopener noreferrer">${post.postTitle}</a>`;
         const descriptionButton = document.createElement('button');
         descriptionButton.setAttribute('data-id', `${post.postId}`);
@@ -80,32 +76,67 @@ export default (state) => {
     const blockInput = () => {
       const input = document.querySelector('.form-control');
       const inputButton = document.querySelector('button[type=submit]');
-      if (watchedState.form.valid) {
-        input.setAttribute('disabled', true);
-        inputButton.setAttribute('disabled', true);
-      } else {
-        input.removeAttribute('disabled');
-        inputButton.removeAttribute('disabled');
-      }
+      input.setAttribute('disabled', true);
+      inputButton.setAttribute('disabled', true);
+    };
+
+    const releaseInput = () => {
+      const input = document.querySelector('.form-control');
+      const inputButton = document.querySelector('button[type=submit]');
+      input.removeAttribute('disabled');
+      inputButton.removeAttribute('disabled');
+    };
+
+    const informSuccess = () => {
+      const feedBackContainer = document.querySelector('.feedback');
+      feedBackContainer.classList.remove('text-danger');
+      feedBackContainer.classList.add('text-success');
+      feedBackContainer.textContent = i18n.t('RSSsuccess');
     };
 
     switch (path) {
       case 'errors': {
-        renderError();
+        renderError(watchedState.errors);
         break;
       }
 
-      case 'form.valid': {
-        blockInput();
+      case 'form.processError': {
+        renderError(watchedState.form.processError);
+        break;
+      }
+
+      case 'form.processState': {
+        if (watchedState.form.processState === 'idle') releaseInput();
+        if (watchedState.form.processState === 'working') blockInput();
+        if (watchedState.form.processState === 'success') {
+          informSuccess();
+          releaseInput();
+        }
         break;
       }
 
       case 'feeds': {
         renderFeeds();
+        const form = document.querySelector('.rss-form');
+        form.reset();
         break;
       }
 
       case 'posts': {
+        renderPosts();
+        break;
+      }
+
+      case 'modal.postId': {
+        const post = watchedState.posts
+          .find((element) => element.postId === watchedState.modal.postId);
+        document.querySelector('.modal-title').textContent = post.postTitle;
+        document.querySelector('.modal-body').textContent = post.postDescription;
+        document.querySelector('a.full-article').setAttribute('href', post.postUrl);
+        break;
+      }
+
+      case 'readPosts': {
         renderPosts();
         break;
       }
