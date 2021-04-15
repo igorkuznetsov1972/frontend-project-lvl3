@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 import * as $ from 'jquery';
 import 'bootstrap';
+import * as _ from 'lodash';
 import * as yup from 'yup';
 import axios from 'axios';
 import setYupLocale from './assets/locales/yupLocale';
@@ -40,20 +41,14 @@ export default () => {
     return url;
   };
 
-  const checkForNewPosts = (xml, feedId) => {
+  const checkForNewPosts = (xml) => {
     const { parsedItems } = parseFeed(xml);
-    parsedItems.reverse().forEach((item) => {
-      item.feedId = feedId;
-      if (!watchedState.posts
-        .filter((el) => el.feedId === feedId)
-        .some((el) => el.postUrl === item.postUrl)) {
-        watchedState.posts.unshift(item);
-      }
-    });
+    return _.difference(parsedItems, watchedState.posts);
   };
 
   const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
-    .then((response) => checkForNewPosts(response, feed.feedId))
+    .then((response) => checkForNewPosts(response))
+    .then((difference) => watchedState.posts.unshift(...difference))
     .then(setTimeout(updateFeed, timeout, feed))
     .catch((err) => console.log(err));
 
