@@ -6,17 +6,13 @@ import * as _ from 'lodash';
 import * as yup from 'yup';
 import axios from 'axios';
 import setYupLocale from './assets/locales/yupLocale';
-// import i18next from 'i18next';
-// import LanguageDetector from 'i18next-browser-languagedetector';
 import watcher from './watcher';
 import parseFeed from './parser';
-// import resources from './assets/locales';
 
 export default () => {
   const state = {
-    form: {
+    loading: {
       processState: 'idle',
-      valid: true,
     },
     modal: {
       processState: 'hidden',
@@ -58,7 +54,7 @@ export default () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const feedUrl = formData.get('url');
-    watchedState.form.processState = 'working';
+    watchedState.loading.processState = 'loading';
     const schema = yup.string().url().notOneOf(watchedState.feedUrls);
     schema.validate(feedUrl, { abortEarly: true })
       .then((url) => axios.get(composeRssUrl(url)))
@@ -68,13 +64,14 @@ export default () => {
         watchedState.feedUrls.push(feedUrl);
         watchedState.feeds.push(parsedFeed);
         watchedState.posts.unshift(...parsedItems);
-        watchedState.form.processState = 'success';
+        watchedState.loading.processState = 'success';
         updateFeed(parsedFeed);
+        watchedState.loading.processState = 'idle';
       })
       .catch((err) => {
         if (err.message) watchedState.errors = err.message;
         if (err.errors) watchedState.errors = err.errors.toString();
-        watchedState.form.processState = 'idle';
+        watchedState.loading.processState = 'idle';
       });
   });
 

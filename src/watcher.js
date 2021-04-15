@@ -14,7 +14,7 @@ export default (state) => {
       resources,
     });
 
-  const watchedState = onChange(state, (path) => {
+  const watchedState = onChange(state, (path, value) => {
     const renderFeeds = () => {
       const feedsContainer = document.querySelector('.feeds');
       feedsContainer.innerHTML = '';
@@ -24,14 +24,14 @@ export default (state) => {
       const feedsDocumentFragment = new DocumentFragment();
       const feedsList = document.createElement('ul');
       feedsList.classList.add('list-group', 'mb-5');
-      watchedState.feeds.forEach((value) => {
+      watchedState.feeds.forEach((feed) => {
         const feedElement = document.createElement('li');
         feedElement.classList.add('list-group-item');
         const feedTitle = document.createElement('h3');
-        feedTitle.textContent = value.feedTitle;
+        feedTitle.textContent = feed.feedTitle;
         feedElement.append(feedTitle);
         const feedDescription = document.createElement('p');
-        feedDescription.textContent = value.feedDescription;
+        feedDescription.textContent = feed.feedDescription;
         feedElement.append(feedDescription);
         feedsList.prepend(feedElement);
       });
@@ -71,32 +71,28 @@ export default (state) => {
         const feedBackContainer = document.querySelector('.feedback');
         feedBackContainer.classList.remove('text-success');
         feedBackContainer.classList.add('text-danger');
-        feedBackContainer.textContent = i18n.t(watchedState.errors);
+        feedBackContainer.textContent = i18n.t(value);
         break;
       }
 
-      case 'form.processState': {
-        if (watchedState.form.processState === 'idle') {
+      case 'loading.processState': {
+        if (value === 'idle') {
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
           input.removeAttribute('disabled');
           inputButton.removeAttribute('disabled');
         }
-        if (watchedState.form.processState === 'working') {
+        if (value === 'loading') {
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
           input.setAttribute('disabled', true);
           inputButton.setAttribute('disabled', true);
         }
-        if (watchedState.form.processState === 'success') {
+        if (value === 'success') {
           const feedBackContainer = document.querySelector('.feedback');
           feedBackContainer.classList.remove('text-danger');
           feedBackContainer.classList.add('text-success');
           feedBackContainer.textContent = i18n.t('RSSsuccess');
-          const input = document.querySelector('.form-control');
-          const inputButton = document.querySelector('button[type=submit]');
-          input.removeAttribute('disabled');
-          inputButton.removeAttribute('disabled');
         }
         break;
       }
@@ -115,7 +111,7 @@ export default (state) => {
 
       case 'modal.postId': {
         const post = watchedState.posts
-          .find((element) => element.postId === watchedState.modal.postId);
+          .find(() => value === watchedState.modal.postId);
         document.querySelector('.modal-title').textContent = post.postTitle;
         document.querySelector('.modal-body').textContent = post.postDescription;
         document.querySelector('a.full-article').setAttribute('href', post.postUrl);
