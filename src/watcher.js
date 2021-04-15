@@ -15,13 +15,6 @@ export default (state) => {
     });
 
   const watchedState = onChange(state, (path) => {
-    const renderError = (errorPath) => {
-      const feedBackContainer = document.querySelector('.feedback');
-      feedBackContainer.classList.remove('text-success');
-      feedBackContainer.classList.add('text-danger');
-      feedBackContainer.textContent = i18n.t(errorPath);
-    };
-
     const renderFeeds = () => {
       const feedsContainer = document.querySelector('.feeds');
       feedsContainer.innerHTML = '';
@@ -73,44 +66,37 @@ export default (state) => {
       postsContainer.append(postsDocumentFragment);
     };
 
-    const blockInput = () => {
-      const input = document.querySelector('.form-control');
-      const inputButton = document.querySelector('button[type=submit]');
-      input.setAttribute('disabled', true);
-      inputButton.setAttribute('disabled', true);
-    };
-
-    const releaseInput = () => {
-      const input = document.querySelector('.form-control');
-      const inputButton = document.querySelector('button[type=submit]');
-      input.removeAttribute('disabled');
-      inputButton.removeAttribute('disabled');
-    };
-
-    const informSuccess = () => {
-      const feedBackContainer = document.querySelector('.feedback');
-      feedBackContainer.classList.remove('text-danger');
-      feedBackContainer.classList.add('text-success');
-      feedBackContainer.textContent = i18n.t('RSSsuccess');
-    };
-
     switch (path) {
       case 'errors': {
-        renderError(watchedState.errors);
-        break;
-      }
-
-      case 'form.processError': {
-        renderError(watchedState.form.processError);
+        const feedBackContainer = document.querySelector('.feedback');
+        feedBackContainer.classList.remove('text-success');
+        feedBackContainer.classList.add('text-danger');
+        feedBackContainer.textContent = i18n.t(watchedState.errors);
         break;
       }
 
       case 'form.processState': {
-        if (watchedState.form.processState === 'idle') releaseInput();
-        if (watchedState.form.processState === 'working') blockInput();
+        if (watchedState.form.processState === 'idle') {
+          const input = document.querySelector('.form-control');
+          const inputButton = document.querySelector('button[type=submit]');
+          input.removeAttribute('disabled');
+          inputButton.removeAttribute('disabled');
+        }
+        if (watchedState.form.processState === 'working') {
+          const input = document.querySelector('.form-control');
+          const inputButton = document.querySelector('button[type=submit]');
+          input.setAttribute('disabled', true);
+          inputButton.setAttribute('disabled', true);
+        }
         if (watchedState.form.processState === 'success') {
-          informSuccess();
-          releaseInput();
+          const feedBackContainer = document.querySelector('.feedback');
+          feedBackContainer.classList.remove('text-danger');
+          feedBackContainer.classList.add('text-success');
+          feedBackContainer.textContent = i18n.t('RSSsuccess');
+          const input = document.querySelector('.form-control');
+          const inputButton = document.querySelector('button[type=submit]');
+          input.removeAttribute('disabled');
+          inputButton.removeAttribute('disabled');
         }
         break;
       }
