@@ -15,7 +15,6 @@ export default () => {
   const state = {
     form: {
       processState: 'idle',
-      processError: null,
       valid: true,
     },
     modal: {
@@ -67,22 +66,19 @@ export default () => {
     watchedState.form.processState = 'working';
     const schema = yup.string().url().notOneOf(watchedState.feedUrls);
     schema.validate(feedUrl, { abortEarly: true })
-      .then((url) => axios.get(composeRssUrl(url))
-        .then((response) => parseFeed(response))
-        .then(({ parsedFeed, parsedItems }) => {
-          parsedFeed.feedUrl = feedUrl;
-          updateFeed(parsedFeed);
-          watchedState.feeds.push(parsedFeed);
-          watchedState.posts.unshift(...parsedItems);
-          watchedState.form.processState = 'success';
-        })
-        .catch((err) => {
-          watchedState.form.processError = err.message;
-          watchedState.form.valid = false;
-          watchedState.form.processState = 'idle';
-        }))
+      .then((url) => axios.get(composeRssUrl(url)))
+      .then((response) => parseFeed(response))
+      .then(({ parsedFeed, parsedItems }) => {
+        parsedFeed.feedUrl = feedUrl;
+        watchedState.feedUrls.push(feedUrl);
+        watchedState.feeds.push(parsedFeed);
+        watchedState.posts.unshift(...parsedItems);
+        watchedState.form.processState = 'success';
+        updateFeed(parsedFeed);
+      })
       .catch((err) => {
-        watchedState.errors = err.errors.toString();
+        if (err.message) watchedState.errors = err.message;
+        if (err.errors) watchedState.errors = err.errors.toString();
         watchedState.form.processState = 'idle';
       });
   });
