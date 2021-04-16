@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 import * as $ from 'jquery';
 import 'bootstrap';
-import { difference } from 'lodash';
+import { differenceBy } from 'lodash';
 import * as yup from 'yup';
 import axios from 'axios';
 import setYupLocale from './assets/locales/yupLocale';
@@ -39,7 +39,7 @@ export default () => {
 
   const checkForNewPosts = (xml) => {
     const { parsedItems } = parseFeed(xml);
-    return difference(parsedItems, watchedState.posts);
+    return differenceBy(parsedItems, watchedState.posts, 'postUrl');
   };
 
   const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
@@ -81,4 +81,11 @@ export default () => {
     watchedState.modal.postId = postId;
     watchedState.readPosts.push(postId);
   });
+
+  /* $('div.posts').on('click', (event) => {
+    const button = $(event.relatedTarget.closest('button'));
+    const postId = $(button).data('id').toString();
+    watchedState.modal.postId = postId;
+    watchedState.readPosts.push(postId);
+  }); */
 };
