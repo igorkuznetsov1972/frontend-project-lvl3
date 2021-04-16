@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 import * as $ from 'jquery';
 import 'bootstrap';
-import * as _ from 'lodash';
+import { difference } from 'lodash';
 import * as yup from 'yup';
 import axios from 'axios';
 import setYupLocale from './assets/locales/yupLocale';
@@ -39,12 +39,12 @@ export default () => {
 
   const checkForNewPosts = (xml) => {
     const { parsedItems } = parseFeed(xml);
-    return _.difference(parsedItems, watchedState.posts);
+    return difference(parsedItems, watchedState.posts);
   };
 
   const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
     .then((response) => checkForNewPosts(response))
-    .then((difference) => watchedState.posts.unshift(...difference))
+    .then((diff) => watchedState.posts.unshift(...diff))
     .then(setTimeout(updateFeed, timeout, feed))
     .catch((err) => console.log(err));
 
