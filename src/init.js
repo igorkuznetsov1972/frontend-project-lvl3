@@ -82,10 +82,10 @@ export default () => {
     watchedState.readPosts.push(postId);
   });
 
-  /* $('div.posts').on('click', (event) => {
-    const button = $(event.relatedTarget.closest('button'));
-    const postId = $(button).data('id').toString();
-    watchedState.modal.postId = postId;
+  const postsContainer = document.querySelector('.posts');
+  postsContainer.addEventListener('click', (e) => {
+    const button = e.target.nextSibling;
+    const postId = button.dataset.id;
     watchedState.readPosts.push(postId);
-  }); */
+  });
 };
