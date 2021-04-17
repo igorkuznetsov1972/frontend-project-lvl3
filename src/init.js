@@ -88,7 +88,7 @@ export default () => {
   const postsContainer = document.querySelector('.posts');
   postsContainer.addEventListener('click', (e) => {
     const postId = e.target.dataset.id;
-    watchedState.modal.postId = postId;
     watchedState.readPosts.add(postId);
+    watchedState.modal.postId = postId;
   });
 };
