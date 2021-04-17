@@ -67,7 +67,7 @@ export default () => {
         watchedState.loading.processState = 'idle';
       })
       .catch((err) => {
-        if (err.message) watchedState.errors = err.message;
+        if (err.message) watchedState.errors = 'no internet';
         if (err.errors) watchedState.errors = err.errors.toString();
         watchedState.loading.processState = 'error';
       });
