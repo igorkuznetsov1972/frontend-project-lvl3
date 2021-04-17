@@ -1,8 +1,7 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable no-param-reassign */
-import * as $ from 'jquery';
 import 'bootstrap';
-import { differenceBy } from 'lodash';
+import differenceBy from 'lodash/differenceBy.js';
 import * as yup from 'yup';
 import axios from 'axios';
 import setYupLocale from './assets/locales/yupLocale';
@@ -65,7 +64,7 @@ export default () => {
         watchedState.feeds.push(parsedFeed);
         watchedState.posts.unshift(...parsedItems);
         watchedState.loading.processState = 'success';
-        updateFeed(parsedFeed);
+        setTimeout(updateFeed, timeout, parsedFeed);
         watchedState.loading.processState = 'idle';
       })
       .catch((err) => {
@@ -75,17 +74,10 @@ export default () => {
       });
   });
 
-  $('#modal').on('show.bs.modal', (event) => {
-    const button = $(event.relatedTarget);
-    const postId = $(button).data('id').toString();
-    watchedState.modal.postId = postId;
-    watchedState.readPosts.push(postId);
-  });
-
   const postsContainer = document.querySelector('.posts');
   postsContainer.addEventListener('click', (e) => {
-    const button = e.target.nextSibling;
-    const postId = button.dataset.id;
+    const postId = e.target.dataset.id;
+    watchedState.modal.postId = postId;
     watchedState.readPosts.push(postId);
   });
 };
