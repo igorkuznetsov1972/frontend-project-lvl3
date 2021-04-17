@@ -68,7 +68,7 @@ export default () => {
       })
       .catch((err) => {
         console.log(err);
-        if (err.message) watchedState.errors = err.message;
+        if (err.message) watchedState.errors = err.message === 'Network Error' ? 'no internet' : err.message;
         if (err.errors) watchedState.errors = err.errors.toString();
         watchedState.loading.processState = 'error';
       });
