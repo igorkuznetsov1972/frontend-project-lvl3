@@ -2,8 +2,11 @@
 /* eslint-disable no-param-reassign */
 import 'bootstrap';
 import differenceBy from 'lodash/differenceBy.js';
+import i18next from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import * as yup from 'yup';
 import axios from 'axios';
+import resources from './assets/locales';
 import setYupLocale from './assets/locales/yupLocale';
 import watcher from './watcher';
 import parseFeed from './parser';
@@ -24,14 +27,23 @@ export default () => {
   };
 
   const timeout = 5000;
-  const watchedState = watcher(state);
+
+  const i18n = i18next.createInstance();
+  i18n
+    .use(LanguageDetector)
+    .init({
+      debug: true,
+      lng: 'ru-RU',
+      detection: { order: ['navigator'] },
+      resources,
+    });
+
+  const watchedState = watcher(state, i18n);
 
   setYupLocale();
 
   const composeRssUrl = (feedUrl) => {
     const url = `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feedUrl}`;
-    // url.searchParams.set('disableCache', 'true');
-    // url.searchParams.set('url', `${feedUrl}`);
     return url;
   };
 

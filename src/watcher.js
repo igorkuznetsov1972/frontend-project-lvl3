@@ -1,19 +1,6 @@
 import onChange from 'on-change';
-import i18next from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
-import resources from './assets/locales';
 
-export default (state) => {
-  const i18n = i18next.createInstance();
-  i18n
-    .use(LanguageDetector)
-    .init({
-      debug: true,
-      lng: 'ru-RU',
-      detection: { order: ['navigator'] },
-      resources,
-    });
-
+export default (state, i18n) => {
   const watchedState = onChange(state, (path, value) => {
     const renderFeeds = () => {
       const feedsContainer = document.querySelector('.feeds');
