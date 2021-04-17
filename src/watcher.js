@@ -9,7 +9,7 @@ export default (state) => {
     .use(LanguageDetector)
     .init({
       debug: true,
-      lng: 'ru-Ru',
+ //     lng: 'ru-Ru',
       detection: { order: ['navigator'] },
       resources,
     });

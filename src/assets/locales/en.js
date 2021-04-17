@@ -1,6 +1,6 @@
 export default {
   translation: {
-    'Network Error': 'Network Error',
+    'Network Error': 'No internet',
     errRSS: 'URL does not contain a valid RSS feed',
     errURL: 'Link should be a valid URL',
     errRSSadded: 'RSS already exists',
