@@ -71,13 +71,13 @@ export default (state) => {
         if (value === 'idle') {
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
-          input.removeAttribute('disabled');
+          input.removeAttribute('readonly');
           inputButton.removeAttribute('disabled');
         }
         if (value === 'loading') {
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
-          input.setAttribute('disabled', true);
+          input.setAttribute('readonly', true);
           inputButton.setAttribute('disabled', true);
         }
         if (value === 'success') {
@@ -93,7 +93,7 @@ export default (state) => {
           feedBackContainer.textContent = i18n.t(watchedState.errors);
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
-          input.removeAttribute('disabled');
+          input.removeAttribute('readonly');
           inputButton.removeAttribute('disabled');
         }
         break;
