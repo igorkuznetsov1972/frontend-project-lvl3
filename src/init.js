@@ -29,7 +29,7 @@ export default () => {
   setYupLocale();
 
   const composeRssUrl = (feedUrl) => {
-    const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
+    const url = `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feedUrl}`;
     url.searchParams.set('disableCache', 'true');
     url.searchParams.set('url', `${feedUrl}`);
     return url;
