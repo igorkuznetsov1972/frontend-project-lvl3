@@ -14,11 +14,10 @@ export default () => {
       processState: 'idle',
     },
     modal: {
-      processState: 'hidden',
       postId: '',
     },
     feedUrls: [],
-    readPosts: [],
+    readPosts: new Set(),
     feeds: [],
     posts: [],
     errors: '',
@@ -78,6 +77,6 @@ export default () => {
   postsContainer.addEventListener('click', (e) => {
     const postId = e.target.dataset.id;
     watchedState.modal.postId = postId;
-    watchedState.readPosts.push(postId);
+    watchedState.readPosts.add(postId);
   });
 };

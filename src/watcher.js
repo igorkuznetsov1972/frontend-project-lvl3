@@ -50,7 +50,7 @@ export default (state) => {
       watchedState.posts.forEach((post) => {
         const postElement = document.createElement('li');
         postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
-        const font = watchedState.readPosts.includes(post.postId) ? 'font-weight-normal' : 'font-weight-bold';
+        const font = watchedState.readPosts.has(post.postId) ? 'font-weight-normal' : 'font-weight-bold';
         postElement.innerHTML = `<a href=${post.postUrl} class=${font} data-id="2" target="_blank" rel="noopener noreferrer">${post.postTitle}</a>`;
         const descriptionButton = document.createElement('button');
         descriptionButton.setAttribute('data-id', `${post.postId}`);
