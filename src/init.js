@@ -43,7 +43,7 @@ export default () => {
   const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
     .then((response) => checkForNewPosts(response))
     .then((diff) => watchedState.posts.unshift(...diff))
-    .then(setTimeout(updateFeed, timeout, feed))
+    .then(setTimeout(updateFeed, timeout, feed));
     // .catch((err) => console.log(err));
 
   const form = document.querySelector('.rss-form');
