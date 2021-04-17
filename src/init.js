@@ -44,7 +44,7 @@ export default () => {
     .then((response) => checkForNewPosts(response))
     .then((diff) => watchedState.posts.unshift(...diff))
     .then(setTimeout(updateFeed, timeout, feed))
-    .catch((err) => console.log(err));
+    // .catch((err) => console.log(err));
 
   const form = document.querySelector('.rss-form');
 
@@ -67,7 +67,6 @@ export default () => {
         watchedState.loading.processState = 'idle';
       })
       .catch((err) => {
-        console.log(err);
         if (err.message) watchedState.errors = err.message === 'Network Error' ? 'no internet' : err.message;
         if (err.errors) watchedState.errors = err.errors.toString();
         watchedState.loading.processState = 'error';
