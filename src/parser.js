@@ -3,7 +3,7 @@ import uniqueId from 'lodash/uniqueId.js';
 export default (xml) => {
   const parser = new DOMParser();
   const feed = parser.parseFromString(xml.data.contents, 'application/xml');
-  const parsedFeed = { feedState: 'new' };
+  const parsedFeed = {};
   const parsedItems = [];
   if (!feed.querySelector('rss') || feed.querySelector('parsererror ')) {
     throw new Error('errRSS');
@@ -12,13 +12,14 @@ export default (xml) => {
     parsedFeed.feedDescription = feed.querySelector('description').textContent;
     parsedFeed.feedId = uniqueId();
     Array.from(feed.querySelectorAll('item')).forEach((item) => {
-      const post = { postRead: false, feedId: parsedFeed.feedId };
+      const post = { feedId: parsedFeed.feedId };
       post.postId = uniqueId();
-      post.postGuid = feed.querySelector('guid').textContent;
-      post.postTitle = item.querySelector('title').textContent;
-      post.postDescription = item.querySelector('description').textContent;
-      post.postPubDate = item.querySelector('pubDate').textContent;
-      post.postUrl = item.querySelector('link').textContent;
+      const title = item.querySelector('title');
+      post.postTitle = title.textContent;
+      const description = item.querySelector('description');
+      post.postDescription = description.textContent;
+      const link = item.querySelector('link');
+      post.postUrl = link.textContent;
       parsedItems.push(post);
     });
   }

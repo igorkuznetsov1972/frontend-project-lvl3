@@ -69,7 +69,7 @@ export default () => {
       .catch((err) => {
         if (err.message) watchedState.errors = err.message;
         if (err.errors) watchedState.errors = err.errors.toString();
-        watchedState.loading.processState = 'idle';
+        watchedState.loading.processState = 'error';
       });
   });
 

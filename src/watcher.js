@@ -66,14 +66,6 @@ export default (state) => {
     };
 
     switch (path) {
-      case 'errors': {
-        const feedBackContainer = document.querySelector('.feedback');
-        feedBackContainer.classList.remove('text-success');
-        feedBackContainer.classList.add('text-danger');
-        feedBackContainer.textContent = i18n.t(value);
-        break;
-      }
-
       case 'loading.processState': {
         if (value === 'idle') {
           const input = document.querySelector('.form-control');
@@ -93,6 +85,16 @@ export default (state) => {
           feedBackContainer.classList.add('text-success');
           feedBackContainer.textContent = i18n.t('RSSsuccess');
         }
+        if (value === 'error') {
+          const feedBackContainer = document.querySelector('.feedback');
+          feedBackContainer.classList.remove('text-success');
+          feedBackContainer.classList.add('text-danger');
+          feedBackContainer.textContent = i18n.t(watchedState.errors);
+          const input = document.querySelector('.form-control');
+          const inputButton = document.querySelector('button[type=submit]');
+          input.removeAttribute('disabled');
+          inputButton.removeAttribute('disabled');
+        }
         break;
       }
 
@@ -111,9 +113,12 @@ export default (state) => {
       case 'modal.postId': {
         const post = watchedState.posts
           .find(() => value === watchedState.modal.postId);
-        document.querySelector('.modal-title').textContent = post.postTitle;
-        document.querySelector('.modal-body').textContent = post.postDescription;
-        document.querySelector('a.full-article').setAttribute('href', post.postUrl);
+        const modalTitle = document.querySelector('.modal-title');
+        modalTitle.textContent = post.postTitle;
+        const modalBody = document.querySelector('.modal-body');
+        modalBody.textContent = post.postDescription;
+        const fullArticleLink = document.querySelector('a.full-article');
+        fullArticleLink.setAttribute('href', post.postUrl);
         break;
       }
 
