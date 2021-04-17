@@ -30,8 +30,8 @@ export default () => {
 
   const composeRssUrl = (feedUrl) => {
     const url = `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feedUrl}`;
-    url.searchParams.set('disableCache', 'true');
-    url.searchParams.set('url', `${feedUrl}`);
+    // url.searchParams.set('disableCache', 'true');
+    // url.searchParams.set('url', `${feedUrl}`);
     return url;
   };
 
