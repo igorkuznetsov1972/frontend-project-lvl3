@@ -65,6 +65,7 @@ export default () => {
       return err.message === 'Network Error' ? 'no internet' : err.message;
     }
     if (err.errors) return err.errors.toString();
+    return err;
   };
 
   const form = document.querySelector('.rss-form');
