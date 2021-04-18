@@ -61,12 +61,10 @@ export default () => {
     .catch((err) => watchedState.errors = err.message);
 
   const getLoadingProcessErrorType = (err) => {
-    let error;
     if (err.message) {
-      error = err.message === 'Network Error' ? 'no internet' : err.message;
+      return err.message === 'Network Error' ? 'no internet' : err.message;
     }
-    if (err.errors) error = err.errors.toString();
-    return error;
+    if (err.errors) return err.errors.toString();
   };
 
   const form = document.querySelector('.rss-form');
