@@ -43,8 +43,10 @@ export default () => {
   setYupLocale();
 
   const composeRssUrl = (feedUrl) => {
-    const url = `https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${feedUrl}`;
-    return url;
+    const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
+    url.searchParams.set('disableCache', 'true');
+    url.searchParams.set('url', `${feedUrl}`);
+    return url.toString();
   };
 
   const checkForNewPosts = (xml) => {
@@ -55,8 +57,17 @@ export default () => {
   const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
     .then((response) => checkForNewPosts(response))
     .then((diff) => watchedState.posts.unshift(...diff))
-    .then(setTimeout(updateFeed, timeout, feed));
-    // .catch((err) => console.log(err));
+    .then(setTimeout(updateFeed, timeout, feed))
+    .catch((err) => watchedState.errors = err.message);
+
+  const getLoadingProcessErrorType = (err) => {
+    let error;
+    if (err.message) {
+      error = err.message === 'Network Error' ? 'no internet' : err.message;
+    }
+    if (err.errors) error = err.errors.toString();
+    return error;
+  };
 
   const form = document.querySelector('.rss-form');
 
@@ -79,8 +90,7 @@ export default () => {
         watchedState.loading.processState = 'idle';
       })
       .catch((err) => {
-        if (err.message) watchedState.errors = err.message === 'Network Error' ? 'no internet' : err.message;
-        if (err.errors) watchedState.errors = err.errors.toString();
+        watchedState.errors = getLoadingProcessErrorType(err);
         watchedState.loading.processState = 'error';
       });
   });
