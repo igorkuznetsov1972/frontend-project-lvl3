@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 import 'bootstrap';
 import differenceBy from 'lodash/differenceBy.js';
+import uniqueId from 'lodash/uniqueId.js';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import * as yup from 'yup';
@@ -23,7 +24,7 @@ export default () => {
     readPosts: new Set(),
     feeds: [],
     posts: [],
-    errors: '',
+    errors: null,
   };
 
   const timeout = 5000;
@@ -69,8 +70,9 @@ export default () => {
   };
 
   const form = document.querySelector('.rss-form');
+  const postsContainer = document.querySelector('.posts');
 
-  form.addEventListener('submit', (e) => {
+  const urlEventListener = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const feedUrl = formData.get('url');
@@ -82,7 +84,9 @@ export default () => {
       .then(({ parsedFeed, parsedItems }) => {
         parsedFeed.feedUrl = feedUrl;
         watchedState.feedUrls.push(feedUrl);
+        parsedFeed.feedId = uniqueId();
         watchedState.feeds.push(parsedFeed);
+        parsedItems.forEach((item) => item.postId = uniqueId());
         watchedState.posts.unshift(...parsedItems);
         watchedState.loading.processState = 'success';
         setTimeout(updateFeed, timeout, parsedFeed);
@@ -92,9 +96,10 @@ export default () => {
         watchedState.errors = getLoadingProcessErrorType(err);
         watchedState.loading.processState = 'error';
       });
-  });
+  };
 
-  const postsContainer = document.querySelector('.posts');
+  form.addEventListener('submit', (e) => urlEventListener(e));
+
   postsContainer.addEventListener('click', (e) => {
     const postId = e.target.dataset.id;
     watchedState.readPosts.add(postId);
