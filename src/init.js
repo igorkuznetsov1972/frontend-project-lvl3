@@ -41,11 +41,13 @@ export default () => {
     return differenceBy(parsedItems, watchedState.posts, 'postUrl');
   };
 
-  const updateFeed = (feed, watchedState) => axios.get(composeRssUrl(feed.feedUrl))
-    .then((response) => checkForNewPosts(response, watchedState))
-    .then((diff) => watchedState.posts.unshift(...diff))
-    .then(setTimeout(updateFeed, timeout, feed))
-    .catch((err) => watchedState.errors = err.message);
+  const updateFeed = (feed, watchedState) => {
+    axios.get(composeRssUrl(feed.feedUrl))
+      .then((response) => checkForNewPosts(response, watchedState))
+      .then((diff) => watchedState.posts.unshift(...diff))
+      .then(setTimeout(updateFeed, timeout, feed, watchedState))
+      .catch((err) => watchedState.errors = err.message);
+  };
 
   const getLoadingProcessErrorType = (err) => {
     if (err.errors) return err.errors.toString();
@@ -68,7 +70,7 @@ export default () => {
     const feedUrl = formData.get('url');
     watchedState.loading.processState = 'loading';
     const schema = yup.string().url().notOneOf(watchedState.feedUrls);
-    schema.validate(feedUrl, { abortEarly: true })
+    return schema.validate(feedUrl, { abortEarly: true })
       .then((url) => axios.get(composeRssUrl(url)))
       .then((response) => parseFeed(response))
       .then(({ parsedFeed, parsedItems }) => {
@@ -79,8 +81,8 @@ export default () => {
         parsedItems.forEach((item) => item.postId = uniqueId());
         watchedState.posts.unshift(...parsedItems);
         watchedState.loading.processState = 'success';
-        setTimeout(updateFeed, timeout, parsedFeed, watchedState);
         watchedState.loading.processState = 'idle';
+        setTimeout(updateFeed, timeout, parsedFeed, watchedState);
       })
       .catch((err) => {
         watchedState.errors = getLoadingProcessErrorType(err);
