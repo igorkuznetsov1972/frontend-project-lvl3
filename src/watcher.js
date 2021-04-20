@@ -1,11 +1,11 @@
 import onChange from 'on-change';
 
-export default (state, i18n) => {
+export default (state, t) => {
   const renderFeeds = (watchedState) => {
     const feedsContainer = document.querySelector('.feeds');
     feedsContainer.innerHTML = '';
     const feedsHeader = document.createElement('h2');
-    feedsHeader.textContent = i18n.t('feeds');
+    feedsHeader.textContent = t('feeds');
     feedsContainer.prepend(feedsHeader);
     const feedsDocumentFragment = new DocumentFragment();
     const feedsList = document.createElement('ul');
@@ -29,7 +29,7 @@ export default (state, i18n) => {
     const postsContainer = document.querySelector('.posts');
     postsContainer.innerHTML = '';
     const postsHeader = document.createElement('h2');
-    postsHeader.textContent = i18n.t('posts');
+    postsHeader.textContent = t('posts');
     postsContainer.append(postsHeader);
     const postsDocumentFragment = new DocumentFragment();
     const postsList = document.createElement('ul');
@@ -51,7 +51,7 @@ export default (state, i18n) => {
       descriptionButton.setAttribute('data-toggle', 'modal');
       descriptionButton.setAttribute('data-target', '#modal');
       descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
-      descriptionButton.textContent = i18n.t('view');
+      descriptionButton.textContent = t('view');
       postElement.append(descriptionButton);
       postsList.append(postElement);
     });
@@ -78,13 +78,13 @@ export default (state, i18n) => {
           const feedBackContainer = document.querySelector('.feedback');
           feedBackContainer.classList.remove('text-danger');
           feedBackContainer.classList.add('text-success');
-          feedBackContainer.textContent = i18n.t('RSSsuccess');
+          feedBackContainer.textContent = t('RSSsuccess');
         }
         if (value === 'error') {
           const feedBackContainer = document.querySelector('.feedback');
           feedBackContainer.classList.remove('text-success');
           feedBackContainer.classList.add('text-danger');
-          feedBackContainer.textContent = i18n.t(watchedState.errors);
+          feedBackContainer.textContent = t(watchedState.errors);
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
           input.removeAttribute('readonly');

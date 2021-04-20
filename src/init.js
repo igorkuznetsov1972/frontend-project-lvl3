@@ -3,7 +3,7 @@
 import 'bootstrap';
 import differenceBy from 'lodash/differenceBy.js';
 import uniqueId from 'lodash/uniqueId.js';
-import i18next from 'i18next';
+import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import * as yup from 'yup';
 import axios from 'axios';
@@ -29,80 +29,87 @@ export default () => {
 
   const timeout = 5000;
 
-  const i18n = i18next.createInstance();
-  i18n
+  return i18n
     .use(LanguageDetector)
     .init({
       debug: true,
       lng: 'ru-RU',
       detection: { order: ['navigator'] },
       resources,
-    });
+    })
 
-  const watchedState = watcher(state, i18n);
+    .then((t) => {
+      const watchedState = watcher(state, t);
 
-  setYupLocale();
+      setYupLocale();
 
-  const composeRssUrl = (feedUrl) => {
-    const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
-    url.searchParams.set('disableCache', 'true');
-    url.searchParams.set('url', `${feedUrl}`);
-    return url.toString();
-  };
+      const composeRssUrl = (feedUrl) => {
+        const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
+        url.searchParams.set('disableCache', 'true');
+        url.searchParams.set('url', `${feedUrl}`);
+        return url.toString();
+      };
 
-  const checkForNewPosts = (xml) => {
-    const { parsedItems } = parseFeed(xml);
-    return differenceBy(parsedItems, watchedState.posts, 'postUrl');
-  };
+      const checkForNewPosts = (xml) => {
+        const { parsedItems } = parseFeed(xml);
+        return differenceBy(parsedItems, watchedState.posts, 'postUrl');
+      };
 
-  const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
-    .then((response) => checkForNewPosts(response))
-    .then((diff) => watchedState.posts.unshift(...diff))
-    .then(setTimeout(updateFeed, timeout, feed))
-    .catch((err) => watchedState.errors = err.message);
+      const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
+        .then((response) => checkForNewPosts(response))
+        .then((diff) => watchedState.posts.unshift(...diff))
+        .then(setTimeout(updateFeed, timeout, feed))
+        .catch((err) => watchedState.errors = err.message);
 
-  const getLoadingProcessErrorType = (err) => {
-    if (err.message) {
-      return err.message === 'Network Error' ? 'no internet' : err.message;
-    }
-    if (err.errors) return err.errors.toString();
-    return err;
-  };
+      const getLoadingProcessErrorType = (err) => {
+        if (err.errors) return err.errors.toString();
+        switch (err.message) {
+          case 'Network Error':
+            return 'no internet';
 
-  const form = document.querySelector('.rss-form');
-  const postsContainer = document.querySelector('.posts');
+          case 'parseError':
+            return 'non-rss url';
 
-  const urlEventListener = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const feedUrl = formData.get('url');
-    watchedState.loading.processState = 'loading';
-    const schema = yup.string().url().notOneOf(watchedState.feedUrls);
-    schema.validate(feedUrl, { abortEarly: true })
-      .then((url) => axios.get(composeRssUrl(url)))
-      .then((response) => parseFeed(response))
-      .then(({ parsedFeed, parsedItems }) => {
-        parsedFeed.feedUrl = feedUrl;
-        watchedState.feedUrls.push(feedUrl);
-        parsedFeed.feedId = uniqueId();
-        watchedState.feeds.push(parsedFeed);
-        parsedItems.forEach((item) => item.postId = uniqueId());
-        watchedState.posts.unshift(...parsedItems);
-        watchedState.loading.processState = 'success';
-        setTimeout(updateFeed, timeout, parsedFeed);
-        watchedState.loading.processState = 'idle';
-      })
-      .catch((err) => {
-        watchedState.errors = getLoadingProcessErrorType(err);
-        watchedState.loading.processState = 'error';
+          default:
+            return err.message;
+        }
+      };
+
+      const form = document.querySelector('.rss-form');
+      const postsContainer = document.querySelector('.posts');
+
+      const urlEventListener = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const feedUrl = formData.get('url');
+        watchedState.loading.processState = 'loading';
+        const schema = yup.string().url().notOneOf(watchedState.feedUrls);
+        schema.validate(feedUrl, { abortEarly: true })
+          .then((url) => axios.get(composeRssUrl(url)))
+          .then((response) => parseFeed(response))
+          .then(({ parsedFeed, parsedItems }) => {
+            parsedFeed.feedUrl = feedUrl;
+            watchedState.feedUrls.push(feedUrl);
+            parsedFeed.feedId = uniqueId();
+            watchedState.feeds.push(parsedFeed);
+            parsedItems.forEach((item) => item.postId = uniqueId());
+            watchedState.posts.unshift(...parsedItems);
+            watchedState.loading.processState = 'success';
+            setTimeout(updateFeed, timeout, parsedFeed);
+            watchedState.loading.processState = 'idle';
+          })
+          .catch((err) => {
+            watchedState.errors = getLoadingProcessErrorType(err);
+            watchedState.loading.processState = 'error';
+          });
+      };
+
+      form.addEventListener('submit', (e) => urlEventListener(e));
+
+      postsContainer.addEventListener('click', (e) => {
+        const postId = e.target.dataset.id;
+        watchedState.readPosts.add(postId);
+        watchedState.modal.postId = postId;
       });
-  };
-
-  form.addEventListener('submit', (e) => urlEventListener(e));
-
-  postsContainer.addEventListener('click', (e) => {
-    const postId = e.target.dataset.id;
-    watchedState.readPosts.add(postId);
-    watchedState.modal.postId = postId;
-  });
+    });
 };

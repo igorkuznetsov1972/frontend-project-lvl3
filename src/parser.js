@@ -3,8 +3,8 @@ export default (xml) => {
   const feed = parser.parseFromString(xml.data.contents, 'application/xml');
   const parsedFeed = {};
   const parsedItems = [];
-  if (!feed.querySelector('rss') || feed.querySelector('parsererror ')) {
-    throw new Error('non-rss url');
+  if (!feed.querySelector('rss') || feed.querySelector('parsererror')) {
+    throw new Error('parseError');
   } else {
     parsedFeed.feedTitle = feed.querySelector('title').textContent;
     parsedFeed.feedDescription = feed.querySelector('description').textContent;
