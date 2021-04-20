@@ -29,6 +29,61 @@ export default () => {
 
   const timeout = 5000;
 
+  const composeRssUrl = (feedUrl) => {
+    const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
+    url.searchParams.set('disableCache', 'true');
+    url.searchParams.set('url', `${feedUrl}`);
+    return url.toString();
+  };
+
+  const checkForNewPosts = (xml, watchedState) => {
+    const { parsedItems } = parseFeed(xml);
+    return differenceBy(parsedItems, watchedState.posts, 'postUrl');
+  };
+
+  const updateFeed = (feed, watchedState) => axios.get(composeRssUrl(feed.feedUrl))
+    .then((response) => checkForNewPosts(response, watchedState))
+    .then((diff) => watchedState.posts.unshift(...diff))
+    .then(setTimeout(updateFeed, timeout, feed))
+    .catch((err) => watchedState.errors = err.message);
+
+  const getLoadingProcessErrorType = (err) => {
+    if (err.errors) return err.errors.toString();
+    switch (err.message) {
+      case 'Network Error':
+        return 'no internet';
+
+      case 'parseError':
+        return 'non-rss url';
+
+      default:
+        return err.message;
+    }
+  };
+
+  const urlEventListener = (e, watchedState) => {
+    e.preventDefault();
+    setYupLocale();
+    const formData = new FormData(e.target);
+    const feedUrl = formData.get('url');
+    watchedState.loading.processState = 'loading';
+    const schema = yup.string().url().notOneOf(watchedState.feedUrls);
+    schema.validate(feedUrl, { abortEarly: true })
+      .then((url) => axios.get(composeRssUrl(url)))
+      .then((response) => parseFeed(response))
+      .then(({ parsedFeed, parsedItems }) => {
+        parsedFeed.feedUrl = feedUrl;
+        watchedState.feedUrls.push(feedUrl);
+        parsedFeed.feedId = uniqueId();
+        watchedState.feeds.push(parsedFeed);
+        parsedItems.forEach((item) => item.postId = uniqueId());
+        watchedState.posts.unshift(...parsedItems);
+        watchedState.loading.processState = 'success';
+        setTimeout(updateFeed, timeout, parsedFeed, watchedState);
+        watchedState.loading.processState = 'idle';
+      });
+  };
+
   return i18n
     .use(LanguageDetector)
     .init({
@@ -38,78 +93,21 @@ export default () => {
       resources,
     })
 
-    .then((t) => {
-      const watchedState = watcher(state, t);
-
-      setYupLocale();
-
-      const composeRssUrl = (feedUrl) => {
-        const url = new URL('https://hexlet-allorigins.herokuapp.com/get');
-        url.searchParams.set('disableCache', 'true');
-        url.searchParams.set('url', `${feedUrl}`);
-        return url.toString();
-      };
-
-      const checkForNewPosts = (xml) => {
-        const { parsedItems } = parseFeed(xml);
-        return differenceBy(parsedItems, watchedState.posts, 'postUrl');
-      };
-
-      const updateFeed = (feed) => axios.get(composeRssUrl(feed.feedUrl))
-        .then((response) => checkForNewPosts(response))
-        .then((diff) => watchedState.posts.unshift(...diff))
-        .then(setTimeout(updateFeed, timeout, feed))
-        .catch((err) => watchedState.errors = err.message);
-
-      const getLoadingProcessErrorType = (err) => {
-        if (err.errors) return err.errors.toString();
-        switch (err.message) {
-          case 'Network Error':
-            return 'no internet';
-
-          case 'parseError':
-            return 'non-rss url';
-
-          default:
-            return err.message;
-        }
-      };
-
+    .then((t) => watcher(state, t))
+    .then((watchedState) => {
       const form = document.querySelector('.rss-form');
       const postsContainer = document.querySelector('.posts');
 
-      const urlEventListener = (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const feedUrl = formData.get('url');
-        watchedState.loading.processState = 'loading';
-        const schema = yup.string().url().notOneOf(watchedState.feedUrls);
-        schema.validate(feedUrl, { abortEarly: true })
-          .then((url) => axios.get(composeRssUrl(url)))
-          .then((response) => parseFeed(response))
-          .then(({ parsedFeed, parsedItems }) => {
-            parsedFeed.feedUrl = feedUrl;
-            watchedState.feedUrls.push(feedUrl);
-            parsedFeed.feedId = uniqueId();
-            watchedState.feeds.push(parsedFeed);
-            parsedItems.forEach((item) => item.postId = uniqueId());
-            watchedState.posts.unshift(...parsedItems);
-            watchedState.loading.processState = 'success';
-            setTimeout(updateFeed, timeout, parsedFeed);
-            watchedState.loading.processState = 'idle';
-          })
-          .catch((err) => {
-            watchedState.errors = getLoadingProcessErrorType(err);
-            watchedState.loading.processState = 'error';
-          });
-      };
-
-      form.addEventListener('submit', (e) => urlEventListener(e));
+      form.addEventListener('submit', (e) => urlEventListener(e, watchedState));
 
       postsContainer.addEventListener('click', (e) => {
         const postId = e.target.dataset.id;
         watchedState.readPosts.add(postId);
         watchedState.modal.postId = postId;
       });
+    })
+    .catch((err, watchedState) => {
+      watchedState.errors = getLoadingProcessErrorType(err);
+      watchedState.loading.processState = 'error';
     });
 };
