@@ -4,7 +4,7 @@ import 'bootstrap';
 import differenceBy from 'lodash/differenceBy.js';
 import uniqueId from 'lodash/uniqueId.js';
 import i18n from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+// import LanguageDetector from 'i18next-browser-languagedetector';
 import * as yup from 'yup';
 import axios from 'axios';
 import resources from './assets/locales';
@@ -81,11 +81,15 @@ export default () => {
         watchedState.loading.processState = 'success';
         setTimeout(updateFeed, timeout, parsedFeed, watchedState);
         watchedState.loading.processState = 'idle';
+      })
+      .catch((err) => {
+        watchedState.errors = getLoadingProcessErrorType(err);
+        watchedState.loading.processState = 'error';
       });
   };
 
   return i18n
-    .use(LanguageDetector)
+    // .use(LanguageDetector)
     .init({
       debug: true,
       lng: 'ru-RU',
@@ -105,9 +109,5 @@ export default () => {
         watchedState.readPosts.add(postId);
         watchedState.modal.postId = postId;
       });
-    })
-    .catch((err, watchedState) => {
-      watchedState.errors = getLoadingProcessErrorType(err);
-      watchedState.loading.processState = 'error';
     });
 };
