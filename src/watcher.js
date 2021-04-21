@@ -1,11 +1,11 @@
 import onChange from 'on-change';
 
-export default (state, t) => {
+export default (state, translate) => {
   const renderFeeds = (watchedState) => {
     const feedsContainer = document.querySelector('.feeds');
     feedsContainer.innerHTML = '';
     const feedsHeader = document.createElement('h2');
-    feedsHeader.textContent = t('feeds');
+    feedsHeader.textContent = translate('feeds');
     feedsContainer.prepend(feedsHeader);
     const feedsDocumentFragment = new DocumentFragment();
     const feedsList = document.createElement('ul');
@@ -29,7 +29,7 @@ export default (state, t) => {
     const postsContainer = document.querySelector('.posts');
     postsContainer.innerHTML = '';
     const postsHeader = document.createElement('h2');
-    postsHeader.textContent = t('posts');
+    postsHeader.textContent = translate('posts');
     postsContainer.append(postsHeader);
     const postsDocumentFragment = new DocumentFragment();
     const postsList = document.createElement('ul');
@@ -51,7 +51,7 @@ export default (state, t) => {
       descriptionButton.setAttribute('data-toggle', 'modal');
       descriptionButton.setAttribute('data-target', '#modal');
       descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
-      descriptionButton.textContent = t('view');
+      descriptionButton.textContent = translate('view');
       postElement.append(descriptionButton);
       postsList.append(postElement);
     });
@@ -78,13 +78,13 @@ export default (state, t) => {
           const feedBackContainer = document.querySelector('.feedback');
           feedBackContainer.classList.remove('text-danger');
           feedBackContainer.classList.add('text-success');
-          feedBackContainer.textContent = t('RSSsuccess');
+          feedBackContainer.textContent = translate('RSSsuccess');
         }
         if (value === 'error') {
           const feedBackContainer = document.querySelector('.feedback');
           feedBackContainer.classList.remove('text-success');
           feedBackContainer.classList.add('text-danger');
-          feedBackContainer.textContent = t(watchedState.errors);
+          feedBackContainer.textContent = translate(watchedState.errors);
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
           input.removeAttribute('readonly');

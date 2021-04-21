@@ -3,8 +3,7 @@
 import 'bootstrap';
 import differenceBy from 'lodash/differenceBy.js';
 import uniqueId from 'lodash/uniqueId.js';
-import i18n from 'i18next';
-// import LanguageDetector from 'i18next-browser-languagedetector';
+import i18next from 'i18next';
 import * as yup from 'yup';
 import axios from 'axios';
 import resources from './assets/locales';
@@ -18,7 +17,7 @@ export default () => {
       processState: 'idle',
     },
     modal: {
-      postId: '',
+      postId: null,
     },
     feedUrls: [],
     readPosts: new Set(),
@@ -51,16 +50,8 @@ export default () => {
 
   const getLoadingProcessErrorType = (err) => {
     if (err.errors) return err.errors.toString();
-    switch (err.message) {
-      case 'Network Error':
-        return 'no internet';
-
-      case 'parseError':
-        return 'non-rss url';
-
-      default:
-        return err.message;
-    }
+    if (err.message === 'parseError') return 'non-rss url';
+    return 'no internet';
   };
 
   const urlEventListener = (e, watchedState) => {
@@ -89,9 +80,8 @@ export default () => {
         watchedState.loading.processState = 'error';
       });
   };
-
+  const i18n = i18next.createInstance();
   return i18n
-    // .use(LanguageDetector)
     .init({
       debug: true,
       lng: 'ru-RU',
@@ -99,7 +89,7 @@ export default () => {
       resources,
     })
 
-    .then((t) => watcher(state, t))
+    .then((translate) => watcher(state, translate))
     .then((watchedState) => {
       const form = document.querySelector('.rss-form');
       const postsContainer = document.querySelector('.posts');
