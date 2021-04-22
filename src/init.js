@@ -54,7 +54,7 @@ export default () => {
     const formData = new FormData(e.target);
     const feedUrl = formData.get('url');
     watchedState.loading.processState = 'loading';
-    const schema = yup.string().url().notOneOf(watchedState.feedUrls);
+    const schema = yup.string().required().url().notOneOf(watchedState.feedUrls);
     return schema.validate(feedUrl, { abortEarly: true })
       .then((url) => axios.get(composeRssUrl(url)))
       .then((response) => parseFeed(response))
