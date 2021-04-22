@@ -5,9 +5,12 @@ export default (xml) => {
   if (rssError) throw new Error('parseError');
   const parsedFeed = {};
   const parsedItems = [];
-  parsedFeed.feedTitle = feed.querySelector('title').textContent;
-  parsedFeed.feedDescription = feed.querySelector('description').textContent;
-  Array.from(feed.querySelectorAll('item')).forEach((item) => {
+  const feedTitle = feed.querySelector('title');
+  parsedFeed.feedTitle = feedTitle.textContent;
+  const feedDescription = feed.querySelector('description');
+  parsedFeed.feedDescription = feedDescription.textContent;
+  const items = Array.from(feed.querySelectorAll('item'));
+  items.forEach((item) => {
     const post = { feedId: parsedFeed.feedId };
     const title = item.querySelector('title');
     post.postTitle = title.textContent;

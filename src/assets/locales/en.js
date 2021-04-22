@@ -1,9 +1,9 @@
 export default {
   translation: {
-    'no internet': 'No internet',
-    'non-rss url': 'URL does not contain a valid RSS feed',
+    'Network Error': 'No internet',
+    parseError: 'URL does not contain a valid RSS feed',
     errURL: 'Link should be a valid URL',
-    errRSSadded: 'RSS already exists',
+    duplicate: 'RSS already exists',
     RSSsuccess: 'RSS sucessfully added',
     feeds: 'Feeds',
     posts: 'Posts',
