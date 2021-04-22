@@ -23,7 +23,7 @@ export default () => {
     readPosts: new Set(),
     feeds: [],
     posts: [],
-    errors: null,
+    error: null,
   };
 
   const timeout = 5000;
@@ -50,8 +50,9 @@ export default () => {
 
   const getLoadingProcessErrorType = (err) => {
     if (err.errors) return err.errors.toString();
-    if (err.message === 'parseError') return 'non-rss url';
-    return 'no internet';
+    /* if (err.message === 'parseError') return 'non-rss url';
+    return 'no internet'; */
+    return err.message;
   };
 
   const urlEventListener = (e, watchedState) => {
@@ -76,7 +77,7 @@ export default () => {
         setTimeout(updateFeed, timeout, parsedFeed, watchedState);
       })
       .catch((err) => {
-        watchedState.errors = getLoadingProcessErrorType(err);
+        watchedState.error = getLoadingProcessErrorType(err);
         watchedState.loading.processState = 'error';
       });
   };

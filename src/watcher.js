@@ -84,7 +84,7 @@ export default (state, translate) => {
           const feedBackContainer = document.querySelector('.feedback');
           feedBackContainer.classList.remove('text-success');
           feedBackContainer.classList.add('text-danger');
-          feedBackContainer.textContent = translate(watchedState.errors);
+          feedBackContainer.textContent = translate(watchedState.error);
           const input = document.querySelector('.form-control');
           const inputButton = document.querySelector('button[type=submit]');
           input.removeAttribute('readonly');
