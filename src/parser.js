@@ -1,9 +1,10 @@
 export default (xml) => {
   const parser = new DOMParser();
   const feed = parser.parseFromString(xml.data.contents, 'application/xml');
+  const rssError = feed.querySelector('parsererror');
+  if (rssError) throw new Error('parseError');
   const parsedFeed = {};
   const parsedItems = [];
-  if (feed.querySelector('parsererror')) throw new Error('parseError');
   parsedFeed.feedTitle = feed.querySelector('title').textContent;
   parsedFeed.feedDescription = feed.querySelector('description').textContent;
   Array.from(feed.querySelectorAll('item')).forEach((item) => {
