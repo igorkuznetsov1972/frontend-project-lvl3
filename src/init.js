@@ -48,12 +48,6 @@ export default () => {
       .catch((err) => watchedState.errors = err.message);
   };
 
-  /* const getLoadingProcessErrorType = (err) => {
-    console.log(err);
-    if (err.isAxiosError) return err.message;
-    return err.message;
-  }; */
-
   const urlEventListener = (e, watchedState) => {
     e.preventDefault();
     setYupLocale();
