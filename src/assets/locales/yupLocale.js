@@ -3,10 +3,10 @@ import { setLocale } from 'yup';
 export default () => {
   setLocale({
     mixed: {
-      notOneOf: 'errRSSadded',
+      notOneOf: () => 'duplicate',
     },
     string: {
-      url: 'errURL',
+      url: () => 'errURL',
     },
   });
 };
