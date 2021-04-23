@@ -1,6 +1,6 @@
 export default {
   translation: {
-    'no internet': 'no internet',
+    'no internet': 'Ошибка сети',
     'Network Error': 'Ошибка сети',
     parseError: 'Ресурс не содержит валидный RSS',
     errURL: 'Ссылка должна быть валидным URL',

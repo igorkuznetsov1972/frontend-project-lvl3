@@ -77,7 +77,7 @@ export default () => {
   const i18n = i18next.createInstance();
   return i18n
     .init({
-      debug: false,
+      debug: true,
       lng: 'ru-RU',
       detection: { order: ['navigator'] },
       resources,
