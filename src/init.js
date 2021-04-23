@@ -61,7 +61,6 @@ export default () => {
       .then(({ parsedFeed, parsedItems }) => {
         parsedFeed.feedUrl = feedUrl;
         watchedState.feedUrls.push(feedUrl);
-        parsedFeed.feedId = uniqueId();
         watchedState.feeds.push(parsedFeed);
         parsedItems.forEach((item) => item.postId = uniqueId());
         watchedState.posts.unshift(...parsedItems);
