@@ -37,7 +37,7 @@ export default (state, translate) => {
     watchedState.posts.forEach((post) => {
       const postElement = document.createElement('li');
       postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
-      const font = watchedState.readPosts.has(post.postId) ? 'font-weight-normal' : 'font-weight-bold';
+      const font = watchedState.readPosts.has(post.id) ? 'font-weight-normal' : 'font-weight-bold';
       const postElementTitle = document.createElement('a');
       postElementTitle.classList.add(font);
       postElementTitle.setAttribute('href', post.link);
