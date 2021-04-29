@@ -14,10 +14,10 @@ export default (state, translate) => {
       const feedElement = document.createElement('li');
       feedElement.classList.add('list-group-item');
       const feedTitle = document.createElement('h3');
-      feedTitle.textContent = feed.feedTitle;
+      feedTitle.textContent = feed.title;
       feedElement.append(feedTitle);
       const feedDescription = document.createElement('p');
-      feedDescription.textContent = feed.feedDescription;
+      feedDescription.textContent = feed.description;
       feedElement.append(feedDescription);
       feedsList.prepend(feedElement);
     });
@@ -40,11 +40,11 @@ export default (state, translate) => {
       const font = watchedState.readPosts.has(post.postId) ? 'font-weight-normal' : 'font-weight-bold';
       const postElementTitle = document.createElement('a');
       postElementTitle.classList.add(font);
-      postElementTitle.setAttribute('href', post.postUrl);
+      postElementTitle.setAttribute('href', post.link);
       postElementTitle.setAttribute('rel', 'noopener noreferrer');
       postElementTitle.setAttribute('target', '_blank');
-      postElementTitle.dataset.id = post.postId;
-      postElementTitle.textContent = post.postTitle;
+      postElementTitle.dataset.id = post.id;
+      postElementTitle.textContent = post.title;
       postElement.append(postElementTitle);
       const descriptionButton = document.createElement('button');
       descriptionButton.setAttribute('data-id', `${post.postId}`);
@@ -109,11 +109,11 @@ export default (state, translate) => {
         const post = watchedState.posts
           .find(() => value === watchedState.modal.postId);
         const modalTitle = document.querySelector('.modal-title');
-        modalTitle.textContent = post.postTitle;
+        modalTitle.textContent = post.title;
         const modalBody = document.querySelector('.modal-body');
-        modalBody.textContent = post.postDescription;
+        modalBody.textContent = post.description;
         const fullArticleLink = document.querySelector('a.full-article');
-        fullArticleLink.setAttribute('href', post.postUrl);
+        fullArticleLink.setAttribute('href', post.link);
         break;
       }
 

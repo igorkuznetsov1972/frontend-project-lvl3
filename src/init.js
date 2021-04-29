@@ -59,10 +59,10 @@ export default () => {
       .then((url) => axios.get(composeRssUrl(url)))
       .then((response) => parseFeed(response))
       .then(({ parsedFeed, parsedItems }) => {
-        parsedFeed.feedUrl = feedUrl;
+        parsedFeed.link = feedUrl;
         watchedState.feedUrls.push(feedUrl);
         watchedState.feeds.push(parsedFeed);
-        parsedItems.forEach((item) => item.postId = uniqueId());
+        parsedItems.forEach((item) => item.id = uniqueId());
         watchedState.posts.unshift(...parsedItems);
         watchedState.loading.processState = 'success';
         watchedState.loading.processState = 'idle';

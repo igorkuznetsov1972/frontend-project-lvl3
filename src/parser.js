@@ -6,18 +6,18 @@ export default (xml) => {
   const parsedFeed = {};
   const parsedItems = [];
   const feedTitle = feed.querySelector('title');
-  parsedFeed.feedTitle = feedTitle.textContent;
+  parsedFeed.title = feedTitle.textContent;
   const feedDescription = feed.querySelector('description');
-  parsedFeed.feedDescription = feedDescription.textContent;
+  parsedFeed.description = feedDescription.textContent;
   const items = Array.from(feed.querySelectorAll('item'));
   items.forEach((item) => {
     const post = {};
     const title = item.querySelector('title');
-    post.postTitle = title.textContent;
+    post.title = title.textContent;
     const description = item.querySelector('description');
-    post.postDescription = description.textContent;
-    const link = item.querySelector('link');
-    post.postUrl = link.textContent;
+    post.description = description.textContent;
+    const postLink = item.querySelector('link');
+    post.link = postLink.textContent;
     parsedItems.push(post);
   });
 
