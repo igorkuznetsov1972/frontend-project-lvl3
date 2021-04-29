@@ -47,7 +47,7 @@ export default (state, translate) => {
       postElementTitle.textContent = post.title;
       postElement.append(postElementTitle);
       const descriptionButton = document.createElement('button');
-      descriptionButton.setAttribute('data-id', `${post.postId}`);
+      descriptionButton.setAttribute('data-id', `${post.id}`);
       descriptionButton.setAttribute('data-toggle', 'modal');
       descriptionButton.setAttribute('data-target', '#modal');
       descriptionButton.classList.add('btn', 'btn-primary', 'btn-sm');
