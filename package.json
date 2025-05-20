@@ -26,7 +26,7 @@
     "testURL": "http://localhost/"
   },
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^0.30.0",
     "bootstrap": "^4.6.0",
     "i18next": "^19.9.1",
     "i18next-browser-languagedetector": "^6.1.0",
